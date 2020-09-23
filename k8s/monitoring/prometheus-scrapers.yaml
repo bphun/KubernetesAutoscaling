@@ -1,0 +1,56 @@
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: monitoring
+  name: prometheus-scrapers
+  labels:
+    app: prometheus-scrapers
+spec:
+  selector:
+    app: prometheus-scrapers
+  ports:
+  - port: 9090
+    name: prometheus
+  - port: 9091
+    name: statsd
+  - port: 9093
+    name: nginx-exporter
+  type: NodePort
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: monitoring
+  name: prometheus-scrapers
+spec:
+  selector:
+    matchLabels:
+      app: prometheus-scrapers
+      run: prometheus-scrapers
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        run: prometheus-scrapers
+        app: prometheus-scrapers
+    spec:
+      volumes:
+        - name: prometheus-pv-volume
+          persistentVolumeClaim:
+            claimName: prometheus-pv-claim
+      containers:
+      - name: prometheus
+        image: bphun/k8-auto-scaling:prometheus
+        volumeMounts:
+        - name: prometheus-pv-volume
+          mountPath: /prometheus
+        ports:
+        - containerPort: 9090
+      - name: statsd
+        image: bphun/k8-auto-scaling:statsd
+        ports:
+        - containerPort: 9091
+      - name: nginx-exporter
+        image: bphun/k8-auto-scaling:nginx-exporter
+        ports:
+        - containerPort: 9093

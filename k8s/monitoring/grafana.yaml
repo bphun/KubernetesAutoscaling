@@ -1,0 +1,44 @@
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: monitoring
+  name: grafana
+  labels:
+    app: grafana
+spec:
+  selector:
+    app: grafana
+  ports:
+  - port: 9092
+    name: http
+  type: NodePort
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: monitoring
+  name: grafana
+spec:
+  selector:
+    matchLabels:
+      app: grafana
+      run: grafana
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        run: grafana
+        app: grafana
+    spec:
+      volumes:
+        - name: grafana-pv-volume
+          persistentVolumeClaim:
+            claimName: grafana-pv-claim
+      containers:
+      - name: grafana
+        image: bphun/k8-auto-scaling:grafana
+        volumeMounts:
+        - name: grafana-pv-volume
+          mountPath: /var/lib/grafana
+        ports:
+        - containerPort: 9092

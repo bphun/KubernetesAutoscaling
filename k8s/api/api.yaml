@@ -1,0 +1,65 @@
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: api
+  name: api-service
+  labels:
+    app: api-service
+spec:
+  selector:
+    app: api-service
+  ports:
+  - port: 5000
+    name: http
+  type: NodePort
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: api
+  name: api-service
+spec:
+  selector:
+    matchLabels:
+      app: api-service
+      run: api-service
+      tier: api
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        run: api-service
+        app: api-service
+        tier: api
+    spec:
+      volumes:
+        - name: api-service-pv-volume
+          persistentVolumeClaim:
+            claimName: api-service-pv-claim
+    spec:
+      containers:
+      - name: api-service
+        image: bphun/k8-auto-scaling:api
+        # volumeMounts:
+        # - name: api-service-pv-volume
+        #   mountPath: /etc/api-logs/
+        ports:
+        - containerPort: 5000
+        env:
+        - name: FLASK_ENV
+          value: "production"
+# ---
+# apiVersion: v1
+# kind: Pod
+# metadata:
+#   namespace: api
+#   name: api-service
+# spec:
+#   containers:
+#   - name: api-service
+#     image: bphun/k8-auto-scaling:api
+#     resources:
+#       requests:
+#         cpu: "4"
+#       limits:
+#         cpu: "5"

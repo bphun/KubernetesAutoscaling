@@ -1,0 +1,50 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx
+  namespace: nginx
+spec:
+  type: LoadBalancer
+  selector:
+    app: nginx
+  ports:
+    - port: 7081
+      name: monitoring
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+      name: http
+    - protocol: TCP
+      port: 443
+      targetPort: 443
+      name: https
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: nginx
+  name: nginx
+spec:
+  selector:
+    matchLabels:
+      app: nginx
+      run: nginx
+      tier: backend
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        run: nginx
+        app: nginx
+        tier: backend
+    spec:
+      containers:
+      - name: nginx
+        image: bphun/k8-auto-scaling:nginx
+        ports:
+        - containerPort: 7081
+          name: monitoring
+        - containerPort: 7080
+          name: http
+        - containerPort: 7443
+          name: https
