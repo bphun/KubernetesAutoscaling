@@ -24,4 +24,4 @@ spec:
   accessModes:
     - ReadWriteOnce
   hostPath:
-    path: "../k8sAutoScalingTestVolumes/apiService"
+    path: "/tmp/k8sAutoScalingTestVolumes/apiService"
