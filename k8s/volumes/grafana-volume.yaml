@@ -9,7 +9,7 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 1Gi
+      storage: 80Mi
 ---      
 apiVersion: v1
 kind: PersistentVolume
@@ -20,8 +20,8 @@ metadata:
 spec:
   storageClassName: manual
   capacity:
-    storage: 1Gi
+    storage: 80Mi
   accessModes:
     - ReadWriteOnce
   hostPath:
-    path: "/k8sAutoScalingTestVolumes/grafana"
+    path: "/tmp/k8sAutoScalingTestVolumes/grafana"
