@@ -15,14 +15,14 @@ spec:
     metadata:
       labels:
         app: cadvisor
-        version: v0.36.0
+        version: v0.31.0
     spec:
       tolerations:
       - key: node-role.kubernetes.io/master
         effect: NoSchedule
       containers:
       - name: cadvisor
-        image: google/cadvisor:v0.36.0
+        image: google/cadvisor:v0.31.0
         resources:
           requests:
             memory: 250Mi
