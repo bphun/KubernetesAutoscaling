@@ -24,4 +24,4 @@ spec:
   accessModes:
     - ReadWriteOnce
   hostPath:
-    path: "~/k8sAutoScalingTest/volumes/prometheus"
+    path: "~/k8sAutoScalingTestVolumes/prometheus"
