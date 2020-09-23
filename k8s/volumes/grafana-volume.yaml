@@ -24,4 +24,4 @@ spec:
   accessModes:
     - ReadWriteOnce
   hostPath:
-    path: "/Users/brandonphan/Desktop/Code/k8sAutoScalingTest/volumes/grafana"
+    path: "~/k8sAutoScalingTest/volumes/grafana"
