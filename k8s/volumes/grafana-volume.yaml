@@ -24,4 +24,4 @@ spec:
   accessModes:
     - ReadWriteOnce
   hostPath:
-    path: "/tmp/k8sAutoScalingTestVolumes/grafana"
+    path: "/k8sAutoScalingTestVolumes/grafana"
