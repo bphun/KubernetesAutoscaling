@@ -45,7 +45,7 @@ spec:
         - name: prometheus-pv-volume
           mountPath: /prometheus
         securityContext:
-          runAsUser: 1000
+          runAsUser: 0
         ports:
         - containerPort: 9090
       - name: statsd
