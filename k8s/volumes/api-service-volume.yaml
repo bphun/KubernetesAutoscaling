@@ -11,7 +11,7 @@ spec:
   accessModes:
     - ReadWriteOnce
   hostPath:
-    path: "/home/bphan/k8sAutoScalingTest/apiService"
+    path: "/home/bphan/k8sAutoScalingTest/volumes/apiService"
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim

@@ -37,8 +37,8 @@ spec:
       containers:
       - name: grafana
         image: bphun/k8-auto-scaling:grafana
-        volumeMounts:
-        - name: grafana-pv-volume
-          mountPath: /var/lib/grafana
+        # volumeMounts:
+        # - name: grafana-pv-volume
+        #   mountPath: /var/lib/grafana
         ports:
         - containerPort: 9092
