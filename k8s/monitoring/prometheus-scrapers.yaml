@@ -41,9 +41,9 @@ spec:
       containers:
       - name: prometheus
         image: bphun/k8-auto-scaling:prometheus
-        # volumeMounts:
-        # - name: prometheus-pv-volume
-        #   mountPath: /prometheus
+        volumeMounts:
+        - name: prometheus-pv-volume
+          mountPath: /prometheus
         ports:
         - containerPort: 9090
       - name: statsd
