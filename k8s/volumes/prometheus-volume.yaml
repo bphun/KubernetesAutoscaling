@@ -11,7 +11,7 @@ spec:
   accessModes:
     - ReadWriteOnce
   hostPath:
-    path: "/k8sAutoScalingTestVolumes/prometheus"
+    path: "/home/bphan/k8sAutoScalingTest/prometheus"
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
