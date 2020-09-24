@@ -16,7 +16,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  # namespace: monitoring
+  namespace: monitoring
   name: grafana-pv-claim
 spec:
   storageClassName: manual
