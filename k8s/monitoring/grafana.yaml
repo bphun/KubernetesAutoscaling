@@ -40,5 +40,7 @@ spec:
         volumeMounts:
         - name: grafana-pv-volume
           mountPath: /var/lib/grafana
+        securityContext:
+          runAsUser: 104
         ports:
         - containerPort: 9092
