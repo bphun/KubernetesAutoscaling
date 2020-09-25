@@ -6,6 +6,7 @@ metadata:
   labels:
     app: api-service
 spec:
+  type: ExternalName
   externalName: api-service.api
   selector:
     app: api-service
