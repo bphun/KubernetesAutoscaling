@@ -6,6 +6,7 @@ metadata:
   labels:
     app: api-service
 spec:
+  externalName: api-service.api
   selector:
     app: api-service
   ports:
