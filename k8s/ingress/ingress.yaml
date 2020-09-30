@@ -4,7 +4,7 @@ metadata:
   name: nginx-ingress
 spec:
   rules:
-  - host: 192.168.1.52
+  - host: localhost
     http:
       paths:
       - path: /
