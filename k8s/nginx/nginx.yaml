@@ -44,6 +44,7 @@ spec:
         ports:
         - containerPort: 7081
           name: monitoring
+        - containerPort: 80
         - servicePort: 80
           name: http
         - containerPort: 7443
