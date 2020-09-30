@@ -10,7 +10,7 @@ spec:
       paths:
         - path: /
           backend:
-            serviceName: nginx
+            serviceName: nginx.nginx
             servicePort: 80
 
 # apiVersion: extensions/v1beta1
