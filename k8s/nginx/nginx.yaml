@@ -17,7 +17,7 @@ spec:
       port: 443
       # targetPort: 443
       name: https
-  type: NodePort
+  type: LoadBalancer
 ---
 apiVersion: apps/v1
 kind: Deployment
