@@ -11,7 +11,6 @@ spec:
       name: monitoring
     - protocol: TCP
       port: 80
-      servicePort: 80
       # targetPort: 80
       name: http
     - protocol: TCP
@@ -45,7 +44,7 @@ spec:
         ports:
         - containerPort: 7081
           name: monitoring
-        - containerPort: 7080
+        - containerPort: 80
           name: http
         - containerPort: 7443
           name: https
