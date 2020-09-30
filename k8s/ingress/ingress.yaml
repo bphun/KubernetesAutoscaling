@@ -3,15 +3,14 @@ kind: Ingress
 metadata:
   name: nginx-ingress
 spec:
-  ingressClassName: nginx 
-  tls:
-  - hosts:
-    - 192.168.1.52
   rules:
   - host: 192.168.1.52
     http:
       paths:
       - path: /
+        pathType: Prefix
         backend:
-          serviceName: nginx
-          servicePort: 80
+          service:
+            name: nginx.nginx
+            port:
+              number: 80
