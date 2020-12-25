@@ -1,6 +1,6 @@
 TAG = cadvisor
 PREFIX = bphun/k8-auto-scaling
-VERSION = v0.36.0
+VERSION = v0.37.0
 
 build:
 	docker build -t $(PREFIX):$(TAG) .

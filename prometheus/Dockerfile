@@ -7,5 +7,6 @@ CMD        [ "--config.file=/etc/prometheus/prometheus.yml", \
              "--storage.tsdb.path=/prometheus", \
              "--web.console.libraries=/usr/share/prometheus/console_libraries", \
              "--web.console.templates=/usr/share/prometheus/consoles", \
-             "--web.external-url=http://192.168.1.46/prometheus/" ]
+             "--web.external-url=http://192.168.1.64/prometheus/", \
+             "--log.level=debug" ]
             #  "--web.route-prefix=/prometheus" ]

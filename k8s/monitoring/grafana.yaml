@@ -37,6 +37,7 @@ spec:
       containers:
       - name: grafana
         image: bphun/k8-auto-scaling:grafana
+        imagePullPolicy: Always
         volumeMounts:
         - name: grafana-pv-volume
           mountPath: /var/lib/grafana

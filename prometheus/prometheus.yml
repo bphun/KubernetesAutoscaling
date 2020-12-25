@@ -12,12 +12,24 @@ rule_files:
 # Here it's Prometheus itself.
 scrape_configs:
   - job_name: 'api_gunicorn'
+    scrape_interval: 5s
     static_configs:
       - targets: ['localhost:9091']
   - job_name: 'nginx-exporter'
+    scrape_interval: 5s
     static_configs:
       - targets: ['localhost:9093']
-
+  - job_name: 'node-exporter'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['172.17.0.2:9100']
+  - job_name: cadvisor
+    scrape_interval: 5s
+    metrics_path: /cadvisor/metrics
+    tls_config:
+      insecure_skip_verify: true
+    static_configs:
+      - targets: [ '172.17.0.2:8080' ]
   # - job_name: 'api-service'
   #   metrics_path: '/metrics'
   #   scrape_interval: 5s

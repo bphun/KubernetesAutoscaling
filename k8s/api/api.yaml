@@ -38,6 +38,10 @@ spec:
       containers:
       - name: api-service
         image: bphun/k8-auto-scaling:api
+        imagePullPolicy: Always
+        # resources:
+        #   limits:
+        #     cpu: "7"
         # volumeMounts:
         # - name: api-service-pv-volume
         #   mountPath: /etc/api-logs/

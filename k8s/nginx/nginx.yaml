@@ -9,14 +9,14 @@ spec:
   ports:
     - port: 7081
       name: monitoring
-    - port: 7080
+    - port: 80
       name: http
       # targetPort: 80
     # - protocol: TCP
     #   port: 443
     #   # targetPort: 443
     #   name: https
-  type: ClusterIP
+  type: NodePort
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -40,10 +40,11 @@ spec:
       containers:
       - name: nginx
         image: bphun/k8-auto-scaling:nginx
+        imagePullPolicy: Always
         ports:
         - containerPort: 7081
           name: monitoring
-        - containerPort: 7080
+        - containerPort: 80
           name: http
         # - containerPort: 443
           # name: https

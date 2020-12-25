@@ -1,34 +1,33 @@
-apiVersion: apps/v1 # apps/v1beta2 in Kube 1.8, extensions/v1beta1 in Kube < 1.8
+apiVersion: apps/v1 # for Kubernetes versions before 1.9.0 use apps/v1beta2
 kind: DaemonSet
 metadata:
   name: cadvisor
-  namespace: kube-system 
-  labels:
-    app: cadvisor
+  namespace: cadvisor
   annotations:
       seccomp.security.alpha.kubernetes.io/pod: 'docker/default'
 spec:
   selector:
     matchLabels:
-      app: cadvisor
+      name: cadvisor
   template:
     metadata:
       labels:
-        app: cadvisor
-        version: v0.31.0
+        name: cadvisor
     spec:
-      tolerations:
-      - key: node-role.kubernetes.io/master
-        effect: NoSchedule
+      serviceAccountName: cadvisor
       containers:
       - name: cadvisor
-        image: google/cadvisor:v0.31.0
-        resources:
-          requests:
-            memory: 250Mi
-            cpu: 250m
-          limits:
-            cpu: 400m
+        image: k8s.gcr.io/cadvisor
+        args: ["--url_base_prefix", "/cadvisor"]
+        securityContext:
+          privileged: true
+        # resources:
+        #   requests:
+        #     memory: 200Mi
+        #     cpu: 150m
+        #   limits:
+        #     memory: 2000Mi
+        #     cpu: 300m
         volumeMounts:
         - name: rootfs
           mountPath: /rootfs
@@ -40,15 +39,18 @@ spec:
           mountPath: /sys
           readOnly: true
         - name: docker
-          mountPath: /var/lib/docker  #Mouting Docker volume  
+          mountPath: /var/lib/docker
           readOnly: true
         - name: disk
           mountPath: /dev/disk
           readOnly: true
+        - name: kmsg
+          mountPath: /dev/kmsg
+          readOnly: true
         ports:
           - name: http
-            containerPort: 8080 #Port exposed 
-            hostPort : 31194 #Host's port - Port to expose your cAdvisor DaemonSet on each node
+            containerPort: 8080
+            hostPort: 8080
             protocol: TCP
       automountServiceAccountToken: false
       terminationGracePeriodSeconds: 30
@@ -64,7 +66,10 @@ spec:
           path: /sys
       - name: docker
         hostPath:
-          path: /var/lib/docker #Docker path in Host System
+          path: /var/lib/docker
       - name: disk
         hostPath:
           path: /dev/disk
+      - name: kmsg
+        hostPath:
+          path: /dev/kmsg
