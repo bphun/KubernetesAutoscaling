@@ -5,6 +5,9 @@ kubectl delete -f k8s/api/api.yaml
 kubectl delete -f k8s/monitoring/grafana.yaml 
 kubectl delete -f k8s/monitoring/prometheus-scrapers.yaml 
 kubectl delete -f k8s/monitoring/cadvisor.yaml 
+kubectl delete -f k8s/monitoring/prometheus-adapter/config-map.yaml 
+kubectl delete -f k8s/monitoring/prometheus-adapter/deployment.yaml 
+kubectl delete -f k8s/monitoring/prometheus-adapter/service.yaml 
 
 kubectl delete -f k8s/namespaces/namespaces.yaml
 

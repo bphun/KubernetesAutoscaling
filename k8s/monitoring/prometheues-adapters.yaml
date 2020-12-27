@@ -1,0 +1,18 @@
+prometheus-adapter:
+  prometheus:
+    url: http://prometheus-scrapers.monitoring
+    port: 9090
+
+  rules:
+    custom:
+    - seriesQuery: '{__name__=~"api_gunicorn_request_duration.*",namespace!="",pod!=""}'
+      resources:
+        overrides:
+          namespace:
+            resource: namespace
+          pod:
+            resource: pod
+      name:
+        matches: ^(.*)
+        as: "api_gunicorn_request_duration"
+      metricsQuery: api_gunicorn_request_duration_sum / api_gunicorn_request_duration_count

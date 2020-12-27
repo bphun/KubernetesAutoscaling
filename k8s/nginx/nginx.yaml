@@ -39,7 +39,7 @@ spec:
     spec:
       containers:
       - name: nginx
-        image: bphun/k8-auto-scaling:nginx
+        image: public.ecr.aws/h6v8s1y1/k8s-autoscaling:nginx
         imagePullPolicy: Always
         ports:
         - containerPort: 7081

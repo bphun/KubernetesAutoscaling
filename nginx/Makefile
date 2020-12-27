@@ -1,5 +1,5 @@
 TAG=nginx
-PREFIX=bphun/k8-auto-scaling
+PREFIX=public.ecr.aws/h6v8s1y1/k8s-autoscaling
 
 build:
 	docker build -t $(PREFIX):$(TAG) .
