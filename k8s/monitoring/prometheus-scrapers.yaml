@@ -43,7 +43,7 @@ spec:
             claimName: prometheus-pv-claim
       containers:
       - name: prometheus
-        image: bphun/k8-auto-scaling:prometheus
+        image: public.ecr.aws/h6v8s1y1/k8s-autoscaling:prometheus
         imagePullPolicy: Always
         volumeMounts:
         - name: prometheus-pv-volume
@@ -53,14 +53,14 @@ spec:
         ports:
         - containerPort: 9090
       - name: statsd
-        image: bphun/k8-auto-scaling:statsd
+        image: public.ecr.aws/h6v8s1y1/k8s-autoscaling:statsd
         imagePullPolicy: Always
         ports:
         - containerPort: 9091
         - containerPort: 9125
           protocol: UDP
       - name: nginx-exporter
-        image: bphun/k8-auto-scaling:nginx-exporter
+        image: public.ecr.aws/h6v8s1y1/k8s-autoscaling:nginx-exporter
         imagePullPolicy: Always
         ports:
         - containerPort: 9093
@@ -73,13 +73,13 @@ spec:
 # spec:
 #   containers:
 #     - name: prometheus
-#       image: bphun/k8-auto-scaling:prometheus
+#       image: public.ecr.aws/h6v8s1y1/k8s-autoscaling:prometheus
 #       imagePullPolicy: Always
 #     - name: statsd
-#       image: bphun/k8-auto-scaling:statsd
+#       image: public.ecr.aws/h6v8s1y1/k8s-autoscaling:statsd
 #       imagePullPolicy: Always
 #     - name: nginx-exporter
-#       image: bphun/k8-auto-scaling:nginx-exporter
+#       image: public.ecr.aws/h6v8s1y1/k8s-autoscaling:nginx-exporter
 #       imagePullPolicy: Always
     # resources:
     #   requests:

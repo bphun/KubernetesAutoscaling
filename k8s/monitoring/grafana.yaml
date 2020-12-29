@@ -36,7 +36,7 @@ spec:
             claimName: grafana-pv-claim
       containers:
       - name: grafana
-        image: bphun/k8-auto-scaling:grafana
+        image: public.ecr.aws/h6v8s1y1/k8s-autoscaling:grafana
         imagePullPolicy: Always
         volumeMounts:
         - name: grafana-pv-volume

@@ -1,5 +1,5 @@
 TAG = cadvisor
-PREFIX = bphun/k8-auto-scaling
+PREFIX = public.ecr.aws/h6v8s1y1/k8s-autoscaling
 VERSION = v0.37.0
 
 build:
