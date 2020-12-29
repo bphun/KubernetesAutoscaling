@@ -28,7 +28,7 @@ def home():
 
         executionTime *= 1000
 
-        app.logger.info("{} digit CumSum in {}ms".format(len(inputArr), executionTime))
+        # app.logger.info("{} digit CumSum in {}ms".format(len(inputArr), executionTime))
 
         response = app.response_class(
             response=json.dumps(

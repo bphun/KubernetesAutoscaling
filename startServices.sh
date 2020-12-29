@@ -16,3 +16,5 @@ kubectl apply -f k8s/api/api.yaml
 kubectl apply -f k8s/monitoring/grafana.yaml 
 kubectl apply -f k8s/monitoring/prometheus-scrapers.yaml 
 kubectl apply -f k8s/nginx/nginx.yaml 
+
+kubectl apply -f k8s/horizontal-autoscalers/api.yaml 

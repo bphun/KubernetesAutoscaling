@@ -18,6 +18,7 @@ scrape_configs:
       - targets: ['localhost:9090']
   - job_name: 'api_gunicorn'
     scrape_interval: 5s
+    metrics_path: /statsd/metrics
     static_configs:
       - targets: ['localhost:9091']
   - job_name: 'nginx-exporter'

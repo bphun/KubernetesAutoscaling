@@ -15,7 +15,6 @@ spec:
     name: statsd-prom
   - port: 9125
     name: statsd
-    protocol: UDP
   - port: 9093
     name: nginx-exporter
   type: NodePort
@@ -45,9 +44,9 @@ spec:
       - name: prometheus
         image: public.ecr.aws/h6v8s1y1/k8s-autoscaling:prometheus
         imagePullPolicy: Always
-        volumeMounts:
-        - name: prometheus-pv-volume
-          mountPath: /prometheus
+        # volumeMounts:
+        # - name: prometheus-pv-volume
+        #   mountPath: /prometheus
         securityContext:
           runAsUser: 0
         ports:
@@ -58,7 +57,6 @@ spec:
         ports:
         - containerPort: 9091
         - containerPort: 9125
-          protocol: UDP
       - name: nginx-exporter
         image: public.ecr.aws/h6v8s1y1/k8s-autoscaling:nginx-exporter
         imagePullPolicy: Always
