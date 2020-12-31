@@ -22,6 +22,7 @@ helm install api-autoscaling \
 --set prometheus.path=/prometheus \
 --set rules.existing=adapter-config \
 --set logLevel=10 \
+--set metricsRelistInterval=30s \
 prometheus-community/prometheus-adapter
 # --set rules.default=False \
 

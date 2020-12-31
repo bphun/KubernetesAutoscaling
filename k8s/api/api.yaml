@@ -11,6 +11,8 @@ spec:
   ports:
   - port: 5000
     name: http
+  - port: 9091
+    name: statsd
   type: NodePort
 ---
 apiVersion: apps/v1
@@ -49,6 +51,13 @@ spec:
         #   mountPath: /etc/api-logs/
         ports:
         - containerPort: 5000
+      - name: statsd
+        image: public.ecr.aws/h6v8s1y1/k8s-autoscaling:statsd
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 9091
+        # - containerPort: 9125
+        #   protocol: UDP
         env:
         - name: FLASK_ENV
           value: "production"

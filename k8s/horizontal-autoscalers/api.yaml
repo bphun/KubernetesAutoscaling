@@ -1,8 +1,8 @@
-apiVersion: autoscaling/v2beta1
+apiVersion: autoscaling/v2beta2
 kind: HorizontalPodAutoscaler
 metadata:
   name: api-hpa
-  # namespace: api
+  namespace: api
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
@@ -13,5 +13,8 @@ spec:
   metrics:
   - type: Pods
     pods:
-      metricName: request_duration
-      targetAverageValue: 0.051
+      metric:
+        name: request_duration
+      target:
+        type: AverageValue
+        averageValue: 0.0025

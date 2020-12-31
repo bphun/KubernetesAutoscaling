@@ -11,11 +11,9 @@ data:
           overrides:
             namespace:
               resource: namespace
-            pod_name:
+            pod:
               resource: pod
         name:
           matches: ""
           as: "request_duration"
         metricsQuery: (api_gunicorn_request_duration_sum / api_gunicorn_request_duration_count)
-# resources:
-          # template: <<.Resource>>

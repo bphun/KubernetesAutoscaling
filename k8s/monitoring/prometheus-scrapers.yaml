@@ -11,11 +11,11 @@ spec:
   ports:
   - port: 9090
     name: prometheus
-  - port: 9091
-    name: statsd-prom
-  - port: 9125
-    protocol: UDP
-    name: statsd
+  # - port: 9091
+  #   name: statsd-prom
+  # - port: 9125
+  #   protocol: UDP
+  #   name: statsd
   - port: 9093
     name: nginx-exporter
   type: NodePort
@@ -53,20 +53,20 @@ spec:
           runAsUser: 0
         ports:
         - containerPort: 9090
-      - name: statsd
-        image: public.ecr.aws/h6v8s1y1/k8s-autoscaling:statsd
-        imagePullPolicy: Always
-        ports:
-        - containerPort: 9091
-        - containerPort: 9125
-          protocol: UDP
+      # - name: statsd
+      #   image: public.ecr.aws/h6v8s1y1/k8s-autoscaling:statsd
+      #   imagePullPolicy: Always
+      #   ports:
+      #   - containerPort: 9091
+      #   - containerPort: 9125
+      #     protocol: UDP
       - name: nginx-exporter
         image: public.ecr.aws/h6v8s1y1/k8s-autoscaling:nginx-exporter
         imagePullPolicy: Always
         ports:
         - containerPort: 9093
 ---
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   name: prometheus
@@ -79,7 +79,7 @@ subjects:
   name: prometheus
   namespace: monitoring
 ---
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   name: prometheus
