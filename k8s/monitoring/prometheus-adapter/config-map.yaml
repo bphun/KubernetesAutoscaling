@@ -2,12 +2,20 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: adapter-config
-  namespace: monitoring
+  # namespace: monitoring
 data:
   config.yaml: |
     rules:
-    - seriesQuery: 'api_gunicorn_request_duration_sum'
-      name:
-        matches: 'request_duration'
-        as: 'request_duration'
-      metricsQuery: '(api_gunicorn_request_duration_sum{<<.LabelMatchers>>} by (<<.GroupBy>>) / api_gunicorn_request_duration_count{<<.LabelMatchers>>}) by (<<.GroupBy>>)'
+      - seriesQuery: 'api_gunicorn_request_duration_sum'
+        resources:
+          overrides:
+            namespace:
+              resource: namespace
+            pod_name:
+              resource: pod
+        name:
+          matches: ""
+          as: "request_duration"
+        metricsQuery: (api_gunicorn_request_duration_sum / api_gunicorn_request_duration_count)
+# resources:
+          # template: <<.Resource>>

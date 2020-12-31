@@ -17,3 +17,5 @@ kubectl delete -f k8s/volumes/api-service-volume.yaml
 kubectl delete -f k8s/monitoring/serviceaccount.yaml 
 
 kubectl delete -f k8s/horizontal-autoscalers/api.yaml 
+
+helm uninstall api-autoscaling

@@ -2,10 +2,10 @@ apiVersion: autoscaling/v2beta1
 kind: HorizontalPodAutoscaler
 metadata:
   name: api-hpa
-  namespace: api
+  # namespace: api
 spec:
   scaleTargetRef:
-    apiVersion: extensions/v1beta1
+    apiVersion: apps/v1
     kind: Deployment
     name: api-service
   minReplicas: 1
@@ -13,5 +13,5 @@ spec:
   metrics:
   - type: Pods
     pods:
-      metricName: api_gunicorn_request_duration_sum
+      metricName: request_duration
       targetAverageValue: 0.051

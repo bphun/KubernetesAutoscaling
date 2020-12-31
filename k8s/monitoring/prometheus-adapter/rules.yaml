@@ -1,0 +1,13 @@
+rules:
+  custom:
+    - seriesQuery: "api_gunicorn_request_duration_sum"
+      resources:
+        overrides:
+          kubernetes_namespace:
+            resource: "namespace"
+          kubernetes_pod_name:
+            resource: "pod"
+      name:
+        matches: ""
+        as: "request_duration"
+      metricsQuery: (api_gunicorn_request_duration_sum / api_gunicorn_request_duration_count)

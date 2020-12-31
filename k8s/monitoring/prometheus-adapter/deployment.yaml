@@ -19,7 +19,9 @@ spec:
       serviceAccountName: prometheus-adapter
       containers:
       - name: custom-metrics-apiserver
-        image: quay.io/coreos/k8s-prometheus-adapter-amd64:v0.4.1
+        securityContext:
+          runAsUser: 0
+        image: quay.io/coreos/k8s-prometheus-adapter-amd64:v0.8.2
         args:
         - /adapter
         - --secure-port=6443
