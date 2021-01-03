@@ -1,4 +1,4 @@
-# K8s Autoscaling
+# Kubernetes Autoscaling
 
 This is a Kubernetes cluster that horizontally scales a Golang REST API based on how many requests per second (RPS) the API is processing. Currently, the `HorizontalPodAutoscaler` (HPA) threshold is set to 3000 RPS. The API simply takes a JSON with an array and returns the cumulative sum of the array as a JSON response.
 
