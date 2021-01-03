@@ -14,13 +14,45 @@ scrape_configs:
   - job_name: 'prometheus'
     scrape_interval: 5s
     metrics_path: /prometheus/metrics
-    static_configs:
-      - targets: ['localhost:9090']
+    # static_configs:
+    #   - targets: ['localhost:9090']
+    kubernetes_sd_configs:
+    - role: endpoints
+      namespaces:
+        names:
+        - monitoring
+    relabel_configs:
+    - source_labels: [__meta_kubernetes_service_label_app]
+      separator: ;
+      regex: prometheus-scrapers
+      replacement: $1
+      action: keep
+    - source_labels: [__meta_kubernetes_endpoint_port_name]
+      separator: ;
+      regex: prometheus
+      replacement: $1
+      action: keep
+    - source_labels: [__meta_kubernetes_namespace]
+      separator: ;
+      regex: (.*)
+      target_label: namespace
+      replacement: $1
+      action: replace
+    - source_labels: [__meta_kubernetes_pod_name]
+      separator: ;
+      regex: (.*)
+      target_label: pod
+      replacement: $1
+      action: replace
+    - source_labels: [__meta_kubernetes_service_name]
+      separator: ;
+      regex: (.*)
+      target_label: service
+      replacement: $1
+      action: replace
   - job_name: 'api_gunicorn'
     scrape_interval: 5s
     metrics_path: /statsd/metrics
-    # static_configs:
-    #   - targets: ['localhost:9091']
     kubernetes_sd_configs:
     - role: endpoints
       namespaces:
@@ -57,19 +89,81 @@ scrape_configs:
       action: replace
   - job_name: 'nginx-exporter'
     scrape_interval: 5s
-    static_configs:
-      - targets: ['localhost:9093']
+    # static_configs:
+    #   - targets: ['localhost:9093']
+    kubernetes_sd_configs:
+    - role: endpoints
+      namespaces:
+        names:
+        - nginx
+    relabel_configs:
+    - source_labels: [__meta_kubernetes_service_label_app]
+      separator: ;
+      regex: nginx
+      replacement: $1
+      action: keep
+    - source_labels: [__meta_kubernetes_endpoint_port_name]
+      separator: ;
+      regex: nginx-exporter
+      replacement: $1
+      action: keep
+    - source_labels: [__meta_kubernetes_namespace]
+      separator: ;
+      regex: (.*)
+      target_label: namespace
+      replacement: $1
+      action: replace
+    - source_labels: [__meta_kubernetes_pod_name]
+      separator: ;
+      regex: (.*)
+      target_label: pod
+      replacement: $1
+      action: replace
+    - source_labels: [__meta_kubernetes_service_name]
+      separator: ;
+      regex: (.*)
+      target_label: service
+      replacement: $1
+      action: replace
   - job_name: 'node-exporter'
     scrape_interval: 5s
-    static_configs:
-      - targets: ['192.168.49.2:9100']
+    # static_configs:
+    #   - targets: ['192.168.49.2:9100']
+    kubernetes_sd_configs:
+    - role: pod
+      namespaces:
+        names:
+          - monitoring
+    relabel_configs:
+    - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
+      action: keep
+      regex: true
+    - source_labels: [__meta_kubernetes_namespace, __meta_kubernetes_pod_label_name]
+      separator: '/'
+      target_label: job
+    - source_labels: [__meta_kubernetes_pod_node_name]
+      target_label: node
   - job_name: cadvisor
     scrape_interval: 5s
     metrics_path: /cadvisor/metrics
     tls_config:
       insecure_skip_verify: true
-    static_configs:
-      - targets: [ '192.168.49.2:8080' ]
+    # static_configs:
+    #   - targets: [ '192.168.49.2:8080' ]
+    kubernetes_sd_configs:
+    - role: pod
+      namespaces:
+        names:
+          - cadvisor
+    relabel_configs:
+    - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
+      action: keep
+      regex: true
+    - source_labels: [__meta_kubernetes_namespace, __meta_kubernetes_pod_label_name]
+      separator: '/'
+      target_label: job
+    - source_labels: [__meta_kubernetes_pod_node_name]
+      target_label: node
   # - job_name: 'api-service'
   #   metrics_path: '/metrics'
   #   scrape_interval: 5s

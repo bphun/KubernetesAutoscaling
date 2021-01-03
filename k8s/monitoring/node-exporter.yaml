@@ -3,6 +3,8 @@ kind: DaemonSet
 metadata:
   name: node-exporter
   namespace: monitoring
+  labels:
+    app: node-exporter
 spec:
   selector:
     matchLabels:
@@ -10,8 +12,12 @@ spec:
   template:
     metadata:
       name: node-exporter
+      namespace: node-exporter
       labels:
+        name: node-exporter
         app: node-exporter
+      annotations:
+        prometheus.io.scrape: "true"
     spec:
       hostNetwork: true
       hostPID: true

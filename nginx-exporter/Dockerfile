@@ -11,4 +11,5 @@ FROM alpine:latest
 
 COPY --from=0 nginx-prometheus-exporter .
 
-CMD ./nginx-prometheus-exporter -nginx.scrape-uri http://nginx.nginx:7081/nginx_status -nginx.retries 60 -nginx.retry-interval 10s -web.listen-address :9093
+# CMD ./nginx-prometheus-exporter -nginx.scrape-uri http://nginx.nginx:7081/nginx_status -nginx.retries 60 -nginx.retry-interval 10s -web.listen-address :9093
+CMD ./nginx-prometheus-exporter -nginx.scrape-uri http://localhost:7081/nginx_status -nginx.retries 60 -nginx.retry-interval 10s -web.listen-address :9093

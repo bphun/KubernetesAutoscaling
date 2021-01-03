@@ -3,6 +3,8 @@ kind: Service
 metadata:
   name: nginx
   namespace: nginx
+  labels:
+    app: nginx
 spec:
   selector:
     app: nginx
@@ -11,6 +13,8 @@ spec:
       name: monitoring
     - port: 80
       name: http
+    - port: 9093
+      name: nginx-exporter
       # targetPort: 80
     # - protocol: TCP
     #   port: 443
@@ -46,5 +50,11 @@ spec:
           name: monitoring
         - containerPort: 80
           name: http
+      - name: nginx-exporter
+        image: public.ecr.aws/h6v8s1y1/k8s-autoscaling:nginx-exporter
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 9093
+
         # - containerPort: 443
           # name: https

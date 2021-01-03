@@ -41,11 +41,15 @@ spec:
     spec:
       containers:
       - name: api-service
-        image: public.ecr.aws/h6v8s1y1/k8s-autoscaling:api
+        image: public.ecr.aws/h6v8s1y1/k8s-autoscaling:api-golang
         imagePullPolicy: Always
-        # resources:
-        #   limits:
-        #     cpu: "7"
+        resources:
+          requests:
+            cpu: "4000m"
+            memory: "5000Mi"
+          limits:
+            cpu: "7000m"
+            memory: "14000Mi"
         # volumeMounts:
         # - name: api-service-pv-volume
         #   mountPath: /etc/api-logs/
@@ -56,8 +60,8 @@ spec:
         imagePullPolicy: Always
         ports:
         - containerPort: 9091
-        # - containerPort: 9125
-        #   protocol: UDP
+        - containerPort: 9125
+          protocol: UDP
         env:
         - name: FLASK_ENV
           value: "production"
@@ -69,10 +73,28 @@ spec:
 #   name: api-service
 # spec:
 #   containers:
-#   - name: api-service
-#     image: public.ecr.aws/h6v8s1y1/k8s-autoscaling:api
-#     resources:
-#       requests:
-#         cpu: "4"
-#       limits:
-#         cpu: "5"
+#       - name: api-service
+#         image: public.ecr.aws/h6v8s1y1/k8s-autoscaling:api-golang
+#         imagePullPolicy: Always
+#         resources:
+#           requests:
+#             cpu: "4000m"
+#             memory: "5000Mi"
+#           limits:
+#             cpu: "7000m"
+#             memory: "14000Mi"
+#         # volumeMounts:
+#         # - name: api-service-pv-volume
+#         #   mountPath: /etc/api-logs/
+#         ports:
+#         - containerPort: 5000
+#       - name: statsd
+#         image: public.ecr.aws/h6v8s1y1/k8s-autoscaling:statsd
+#         imagePullPolicy: Always
+#         ports:
+#         - containerPort: 9091
+#         - containerPort: 9125
+#           protocol: UDP
+#         env:
+#         - name: FLASK_ENV
+#           value: "production"

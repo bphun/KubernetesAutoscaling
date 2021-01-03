@@ -1,3 +1,22 @@
+# apiVersion: v1
+# kind: ConfigMap
+# metadata:
+#   name: adapter-config
+#   # namespace: monitoring
+# data:
+#   config.yaml: |
+#     rules:
+#       - seriesQuery: 'api_gunicorn_requests'
+#         resources:
+#           overrides:
+#             namespace:
+#               resource: namespace
+#             pod:
+#               resource: pod
+#         name:
+#           matches: ""
+#           as: "requests_per_second"
+#         metricsQuery: rate(api_gunicorn_requests[1m])
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -6,7 +25,7 @@ metadata:
 data:
   config.yaml: |
     rules:
-      - seriesQuery: 'api_gunicorn_request_duration_sum'
+      - seriesQuery: 'api_gunicorn_requests'
         resources:
           overrides:
             namespace:
@@ -15,5 +34,5 @@ data:
               resource: pod
         name:
           matches: ""
-          as: "request_duration"
-        metricsQuery: (api_gunicorn_request_duration_sum / api_gunicorn_request_duration_count)
+          as: "requests_per_second"
+        metricsQuery: rate(api_request_count[1m])

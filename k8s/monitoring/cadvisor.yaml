@@ -5,14 +5,21 @@ metadata:
   namespace: cadvisor
   annotations:
       seccomp.security.alpha.kubernetes.io/pod: 'docker/default'
+  labels:
+    app: cadvisor
 spec:
   selector:
     matchLabels:
       name: cadvisor
   template:
     metadata:
+      name: cadvisor
+      namespace: cadvisor
       labels:
         name: cadvisor
+        app: cadvisor
+      annotations:
+        prometheus.io.scrape: "true"
     spec:
       serviceAccountName: cadvisor
       containers:
