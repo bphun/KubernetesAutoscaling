@@ -1,6 +1,6 @@
 prometheus-adapter:
   prometheus:
-    url: http://prometheus-scrapers.monitoring
+    url: http://prometheus.monitoring
     port: 9090
 
   rules:
