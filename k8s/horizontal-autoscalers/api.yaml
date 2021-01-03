@@ -17,4 +17,4 @@ spec:
         name: requests_per_second
       target:
         type: AverageValue
-        averageValue: 600
+        averageValue: 3k

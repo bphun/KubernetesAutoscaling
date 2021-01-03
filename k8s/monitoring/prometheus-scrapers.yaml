@@ -46,9 +46,9 @@ spec:
       - name: prometheus
         image: public.ecr.aws/h6v8s1y1/k8s-autoscaling:prometheus
         imagePullPolicy: Always
-        volumeMounts:
-        - name: prometheus-pv-volume
-          mountPath: /prometheus
+        # volumeMounts:
+        # - name: prometheus-pv-volume
+        #   mountPath: /prometheus
         securityContext:
           runAsUser: 0
         ports:

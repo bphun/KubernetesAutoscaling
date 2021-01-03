@@ -25,7 +25,7 @@ metadata:
 data:
   config.yaml: |
     rules:
-      - seriesQuery: 'api_gunicorn_requests'
+      - seriesQuery: 'api_request_duration_count'
         resources:
           overrides:
             namespace:
@@ -35,4 +35,4 @@ data:
         name:
           matches: ""
           as: "requests_per_second"
-        metricsQuery: rate(api_request_count[1m])
+        metricsQuery: rate(api_request_duration_count[1m])

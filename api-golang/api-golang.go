@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"flag"
 	"github.com/cactus/go-statsd-client/statsd"
+	"github.com/fasthttp/router"
 	"github.com/valyala/fasthttp"
 	"github.com/valyala/fasthttp/reuseport"
 	"log"
@@ -22,7 +23,6 @@ type OutputData struct {
 	Data          []int  `json:"data"`
 	ExecutionTime int64  `json:"exec_ns"`
 }
-
 type ClientStats struct {
 	NumRequests   int64
 	Duration      int64
@@ -31,7 +31,8 @@ type ClientStats struct {
 }
 
 var (
-	addr         = flag.String("addr", ":8080", "TCP address to listen to")
+	addr = flag.String("addr", ":8080", "TCP address to listen to")
+	// statsdClient, statsdClientErr = statsd.New(statsd.Address("127.0.0.1:9125"), statsd.Prefix("api"))
 	statsdConfig = &statsd.ClientConfig{
 		Address:       "127.0.0.1:9125",
 		Prefix:        "api",
@@ -39,59 +40,46 @@ var (
 		UseBuffered:   true,
 		FlushInterval: 300 * time.Millisecond,
 	}
-	statsdClient, err = statsd.NewClientWithConfig(statsdConfig)
-	clientStats       ClientStats
+	statsdClient, statsdClientErr = statsd.NewClientWithConfig(statsdConfig)
+	clientStats                   ClientStats
 )
 
 func main() {
 	flag.Parse()
 
-	h := requestHandler
-
-	if err != nil {
-		log.Fatal(err)
+	if statsdClientErr != nil {
+		log.Fatal(statsdClientErr)
 	}
 
 	defer statsdClient.Close()
 
-	listener, err := reuseport.Listen("tcp4", *addr)
+	requestRouter := router.New()
+	requestRouter.POST("/", updateStatsDMetrics(processCumSumRequest))
 
-	if err != nil {
-		log.Fatalf("Error in reuseport listener: %s", err)
+	listener, httpListenErr := reuseport.Listen("tcp4", *addr)
+
+	if httpListenErr != nil {
+		log.Fatalf("Error in reuseport listener: %s", httpListenErr)
 	}
 
 	defer listener.Close()
 
-	if err := fasthttp.Serve(listener, h); err != nil {
+	if err := fasthttp.Serve(listener, requestRouter.Handler); err != nil {
 		log.Fatalf("Error in Serve: %s", err)
 	}
 }
 
-func requestHandler(ctx *fasthttp.RequestCtx) {
-	var requestDuration int64
+func updateStatsDMetrics(h fasthttp.RequestHandler) fasthttp.RequestHandler {
+	return func(ctx *fasthttp.RequestCtx) {
+		t1 := time.Now()
+		h(ctx)
+		t2 := time.Now()
+		duration := t2.Sub(t1)
 
-	if string(ctx.Method()) == "POST" && string(ctx.RequestURI()) == "/" {
-		start := time.Now()
-		processCumSumRequest(ctx)
-		requestDuration = time.Since(start).Microseconds()
-	} else {
-		ctx.SetStatusCode(fasthttp.StatusNotFound)
-	}
+		clientStats.NumRequests++
 
-	clientStats.NumRequests++
-	clientStats.Duration += requestDuration
-
-	updateStatsd(clientStats.NumRequests, clientStats.Duration)
-}
-
-func updateStatsd(numRequests int64, requestDuration int64) {
-	err := statsdClient.Inc("requests.count", numRequests, 1.0)
-	if err != nil {
-		log.Printf("%s\n", err.Error())
-	}
-	err = statsdClient.Timing("requests.duration", requestDuration, 1.0)
-	if err != nil {
-		log.Printf("%s\n", err.Error())
+		statsdClient.TimingDuration("requests.duration", duration, 1.0)
+		statsdClient.Inc("requests.count", clientStats.NumRequests, 1.0)
 	}
 }
 
@@ -109,7 +97,6 @@ func processCumSumRequest(ctx *fasthttp.RequestCtx) {
 		ctx.SetStatusCode(fasthttp.StatusBadRequest)
 	} else {
 		cumSumArr := postBody.Arr
-		// var executionTime int64 = 0
 		executionTime := cumSum(cumSumArr)
 
 		output = OutputData{

@@ -13,7 +13,8 @@ run: build
 api-golang: clean
 	go get -u github.com/valyala/fasthttp
 	go get -u github.com/valyala/fasthttp/reuseport
-	go get -u github.com/cactus/go-statsd-client/statsd
+	go get -u gopkg.in/alexcesaro/statsd.v2
+	go get -u github.com/fasthttp/router
 	go build
 
 clean:
