@@ -43,4 +43,6 @@ If you want to change the HPA threshold, change the `averageValue` value in `k8s
 
 ## Future features
 * I already have Nginx exporter setup so I would like to add a HPA controller for that service
-* Add a VerticalPodAutoscaler (VPA) for the API and Nginx services
+* Add a VerticalPodAutoscaler (VPA) for the API and Nginx services using Node exporter
+* Add another "Microservice" so I can test out distributed tracing frameworks like OpenTracing 
+* Add improved logging to the Go API service
