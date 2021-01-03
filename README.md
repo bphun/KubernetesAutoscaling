@@ -28,7 +28,7 @@ In addition to the API service, the Prometheus service can be accessed at `http:
 
 If you want to access the API service from your LAN, you can use an SSH tunnel like so:
 ```
-ssh -L $MASTER_NODE_IP:8000:$EXTERNAL_IP:80 bphan@$MASTER_NODE_IP
+ssh -L $MASTER_NODE_IP:8000:$EXTERNAL_IP:80 $USER@$MASTER_NODE_IP
 ```
 This will allow you to access the API service from any computer in your LAN through `$MASTER_NODE_IP:8000`
 
