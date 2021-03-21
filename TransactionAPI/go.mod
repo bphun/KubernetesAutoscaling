@@ -1,4 +1,4 @@
-module github.com/bphun/k8sAutoscaling/TransactionAPI
+module github.com/bphun/KubernetesAutoscaling/TransactionAPI
 
 go 1.16
 
@@ -7,5 +7,3 @@ require (
 	google.golang.org/grpc v1.36.0
 	google.golang.org/protobuf v1.26.0
 )
-
-replace github.com/bphun/k8sAutoscaling/TransactionAPI => ../TransactionAPI/TransactionAPI
