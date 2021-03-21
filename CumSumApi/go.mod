@@ -11,4 +11,4 @@ require (
 	google.golang.org/grpc v1.36.0
 )
 
-// replace bphun/k8sAutoscaling/TransactionAPI => ../TransactionAPI
+replace github.com/bphun/k8sAutoscaling/TransactionAPI => ../TransactionAPI
