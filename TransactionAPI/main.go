@@ -1,7 +1,6 @@
 package main
 
 import (
-	// pb "bphun/k8sAutoscaling/TransactionAPI/TransactionAPI"
 	"context"
 	"log"
 	"net"

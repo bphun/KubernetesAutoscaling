@@ -15,7 +15,6 @@ import (
 
 	"github.com/valyala/fasthttp/reuseport"
 
-	// pb "bphun/k8sAutoscaling/TransactionAPI/TransactionAPI"
 	pb "github.com/bphun/KubernetesAutoscaling/TransactionAPI"
 	// _ "net/http/pprof"
 )
