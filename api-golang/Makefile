@@ -18,7 +18,7 @@ api-golang: clean
 	go build
 
 clean:
-	rm -f api-golang
+	rm -f main
 
 push: build
 	docker push $(PREFIX):$(TAG)

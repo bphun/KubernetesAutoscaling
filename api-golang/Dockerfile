@@ -4,7 +4,7 @@ RUN adduser api-user
 
 WORKDIR /home/api
 
-COPY api-golang.go api-golang.go
+COPY main.go main.go
 
 RUN go get -u github.com/fasthttp/router && \
     go get -u github.com/valyala/fasthttp && \
