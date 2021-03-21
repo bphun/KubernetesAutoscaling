@@ -1,11 +1,13 @@
 package main
 
 import (
-	pb "bphun/k8sAutoscaling/TransactionAPI/TransactionAPI"
+	// pb "bphun/k8sAutoscaling/TransactionAPI/TransactionAPI"
 	"context"
 	"log"
 	"net"
 	"sync"
+
+	pb "github.com/bphun/KubernetesAutoscaling/TransactionAPI/TransactionAPI"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"

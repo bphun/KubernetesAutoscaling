@@ -8,4 +8,4 @@ require (
   go.mongodb.org/mongo-driver v1.5.0
 )
 
-replace bphun/k8sAutoscaling/TransactionAPI => ../TransactionAPI/TransactionAPI/
+// replace bphun/k8sAutoscaling/TransactionAPI => ../TransactionAPI/TransactionAPI/
