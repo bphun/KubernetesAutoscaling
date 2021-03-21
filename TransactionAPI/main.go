@@ -12,19 +12,6 @@ import (
 	"google.golang.org/grpc"
 )
 
-const (
-	port             = ":50051"
-	CONNECTIONSTRING = "mongodb://localhost:27017"
-	DB               = "db_transaction_manager"
-	TRANSACTIONS     = "col_transaction"
-)
-
-var (
-	clientInstance      *mongo.Client
-	clientInstanceError error
-	mongoOnce           sync.Once
-)
-
 type server struct {
 	pb.UnimplementedTransactionAPIServer
 }
@@ -35,6 +22,19 @@ type Transaction struct {
 	ExecTime  int64   `bson:"exec_time"`
 	StartTime uint32  `bson:"start_time"`
 }
+
+const (
+	GRPC_PORT         = ":50051"
+	CONNECTION_STRING = "mongodb://localhost:27017"
+	DB                = "db_transaction_manager"
+	TRANSACTIONS      = "col_transaction"
+)
+
+var (
+	dbClientInstance      *mongo.Client
+	dbClientInstanceError error
+	dbOnce                sync.Once
+)
 
 func (s *server) SaveTransaction(ctx context.Context, in *pb.TransactionRequest) (*pb.TransactionReply, error) {
 	errorMessage := "Saved transaction"
@@ -49,22 +49,20 @@ func (s *server) SaveTransaction(ctx context.Context, in *pb.TransactionRequest)
 }
 
 func getMongoClient() (*mongo.Client, error) {
-	//Perform connection creation operation only once.
-	mongoOnce.Do(func() {
-		// Set client options
-		clientOptions := options.Client().ApplyURI(CONNECTIONSTRING)
+	dbOnce.Do(func() {
+		clientOptions := options.Client().ApplyURI(CONNECTION_STRING)
 		client, err := mongo.Connect(context.TODO(), clientOptions)
 		if err != nil {
-			clientInstanceError = err
+			dbClientInstanceError = err
 		}
 
 		err = client.Ping(context.TODO(), nil)
 		if err != nil {
-			clientInstanceError = err
+			dbClientInstanceError = err
 		}
-		clientInstance = client
+		dbClientInstance = client
 	})
-	return clientInstance, clientInstanceError
+	return dbClientInstance, dbClientInstanceError
 }
 
 func createTransaction(task Transaction) error {
@@ -82,12 +80,12 @@ func createTransaction(task Transaction) error {
 }
 
 func main() {
-	lis, err := net.Listen("tcp", port)
+	lis, err := net.Listen("tcp", GRPC_PORT)
 	if err != nil {
 		log.Fatalf("Failed to listen: %v", err)
 	}
 
-	log.Printf("Listening on port %s", port)
+	log.Printf("Listening on port %s", GRPC_PORT)
 
 	s := grpc.NewServer()
 	pb.RegisterTransactionAPIServer(s, &server{})

@@ -5,18 +5,18 @@ import (
 	"encoding/json"
 	"flag"
 	"log"
+	"sync"
 	"time"
 
 	"github.com/cactus/go-statsd-client/v5/statsd"
 	"github.com/fasthttp/router"
 	"github.com/valyala/fasthttp"
+	"google.golang.org/grpc"
 
 	"github.com/valyala/fasthttp/reuseport"
 
 	pb "bphun/k8sAutoscaling/TransactionAPI/TransactionAPI"
 	// _ "net/http/pprof"
-
-	"google.golang.org/grpc"
 )
 
 type InputData struct {
@@ -38,49 +38,39 @@ type ClientStats struct {
 }
 
 const (
-	address    = "localhost:50051"
-	httpAddr   = ":8080"
-	statsdAddr = "127.0.0.1:9125"
+	DEFAULT_HTTP_ADDR = ":8080"
+	STATSD_ADDR       = "127.0.0.1:9125"
+	GRPC_ADDR         = "localhost:50051"
 )
 
 var (
-	addr         = flag.String("addr", httpAddr, "TCP address to listen to")
-	grpcClient   pb.TransactionAPIClient
+	httpAddr = flag.String("addr", DEFAULT_HTTP_ADDR, "TCP address to listen to")
+
 	statsdConfig = &statsd.ClientConfig{
-		Address:       statsdAddr,
+		Address:       STATSD_ADDR,
 		Prefix:        "api",
 		ResInterval:   time.Minute,
 		UseBuffered:   true,
 		FlushInterval: 300 * time.Millisecond,
 	}
-	statsdClient, statsdClientErr = statsd.NewClientWithConfig(statsdConfig)
-	clientStats                   ClientStats
+	statsdClientInstance    statsd.Statter
+	statsdClientInstanceErr error
+	clientStats             ClientStats
+	statsdOnce              sync.Once
+
+	grpcInstanceClient pb.TransactionAPIClient
+	grpcInstanceConn   *grpc.ClientConn
+	grpcInstanceError  error
+	grpcOnce           sync.Once
 )
 
 func main() {
 	flag.Parse()
 
-	if statsdClientErr != nil {
-		log.Fatal("Unable to connect to statsD: %v", statsdClientErr)
-	}
-	log.Printf("Connected to statsd server at %s", statsdAddr)
-
-	defer statsdClient.Close()
-
-	conn, err := grpc.Dial(address, grpc.WithInsecure(), grpc.WithBlock())
-	if err != nil {
-		log.Fatalf("did not connect: %v", err)
-	}
-
-	log.Printf("Connected to gRPC server at %s", address)
-
-	defer conn.Close()
-	grpcClient = pb.NewTransactionAPIClient(conn)
-
 	requestRouter := router.New()
-	requestRouter.POST("/", PostRequestHook(processCumSumRequest))
+	requestRouter.POST("/", postRequestHook(processCumSumRequest))
 
-	listener, httpListenErr := reuseport.Listen("tcp4", *addr)
+	listener, httpListenErr := reuseport.Listen("tcp4", *httpAddr)
 
 	if httpListenErr != nil {
 		log.Fatalf("Error in reuseport listener: %s", httpListenErr)
@@ -91,10 +81,42 @@ func main() {
 	if err := fasthttp.Serve(listener, requestRouter.Handler); err != nil {
 		log.Fatalf("Error in Serve: %s", err)
 	}
+
+	grpcInstanceConn.Close()
+	statsdClientInstance.Close()
 }
 
-func PostRequestHook(h fasthttp.RequestHandler) fasthttp.RequestHandler {
+func getStatsdClient() (statsd.Statter, error) {
+	statsdOnce.Do(func() {
+		statsdClientInstance, statsdClientInstanceErr = statsd.NewClientWithConfig(statsdConfig)
+		if statsdClientInstanceErr != nil {
+			log.Fatalf("Unable to connect to statsD: %v", statsdClientInstanceErr)
+		}
+		log.Printf("Connected to statsD server at %s", STATSD_ADDR)
+	})
+
+	return statsdClientInstance, statsdClientInstanceErr
+}
+
+func getGrpcClient() (pb.TransactionAPIClient, error) {
+	grpcOnce.Do(func() {
+		grpcInstanceConn, grpcInstanceError = grpc.Dial(GRPC_ADDR, grpc.WithInsecure(), grpc.WithBlock())
+		if grpcInstanceError != nil {
+			log.Fatalf("Error: %v", grpcInstanceError)
+		}
+
+		log.Printf("Connected to gRPC server at %s", GRPC_ADDR)
+
+		grpcInstanceClient = pb.NewTransactionAPIClient(grpcInstanceConn)
+	})
+
+	return grpcInstanceClient, grpcInstanceError
+}
+
+func postRequestHook(h fasthttp.RequestHandler) fasthttp.RequestHandler {
 	return func(ctx *fasthttp.RequestCtx) {
+		statsdClient, _ := getStatsdClient()
+
 		t1 := time.Now()
 		h(ctx)
 		t2 := time.Now()
@@ -107,47 +129,53 @@ func PostRequestHook(h fasthttp.RequestHandler) fasthttp.RequestHandler {
 	}
 }
 
+func updateTransactionHistory(inArr []int32, outArr []int32, requestStartTime uint32, executionTime int64) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+
+	grpcClient, _ := getGrpcClient()
+	r, err := grpcClient.SaveTransaction(ctx, &pb.TransactionRequest{InArr: inArr, OutArr: outArr, StartTime: requestStartTime, ExecTime: executionTime})
+
+	if err != nil {
+		log.Fatalf("Could not update transaction history: %v", err)
+	}
+	log.Printf("TransactionDB: %s", r.GetMessage())
+}
+
 func processCumSumRequest(ctx *fasthttp.RequestCtx) {
 	var postBody InputData
 	var output OutputData
-	err := json.Unmarshal(ctx.PostBody(), &postBody)
+	var cumSumArr []int32
+	var executionTime int64
+	var requestStartTime uint32
+	message := "success"
 
+	err := json.Unmarshal(ctx.PostBody(), &postBody)
 	if err != nil {
-		output = OutputData{
-			Message:       err.Error(),
-			Data:          make([]int32, 0),
-			ExecutionTime: 0,
-		}
+		message = err.Error()
+		cumSumArr = make([]int32, 0)
 		ctx.SetStatusCode(fasthttp.StatusBadRequest)
 	} else {
 		origArray := make([]int32, len(postBody.Arr))
-		cumSumArr := postBody.Arr
-		copy(origArray, postBody.Arr)
-		requestStartTime, executionTime := cumSum(cumSumArr)
+		cumSumArr = postBody.Arr
 
-		output = OutputData{
-			Message:          "success",
-			Data:             cumSumArr,
-			ExecutionTime:    executionTime,
-			RequestStartTime: requestStartTime,
-		}
+		copy(origArray, cumSumArr)
+
+		requestStartTime, executionTime = cumSum(cumSumArr)
 
 		go updateTransactionHistory(origArray, cumSumArr, requestStartTime, executionTime)
+	}
+
+	output = OutputData{
+		Message:          message,
+		Data:             cumSumArr,
+		ExecutionTime:    executionTime,
+		RequestStartTime: requestStartTime,
 	}
 
 	marshalledJSON, _ := json.Marshal(output)
 	ctx.SetContentType("application/json")
 	ctx.SetBody(marshalledJSON)
-}
-
-func updateTransactionHistory(inArr []int32, outArr []int32, requestStartTime uint32, executionTime int64) {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
-	defer cancel()
-	r, err := grpcClient.SaveTransaction(ctx, &pb.TransactionRequest{InArr: inArr, OutArr: outArr, StartTime: requestStartTime, ExecTime: executionTime})
-	if err != nil {
-		log.Fatalf("Could not update transaction history: %v", err)
-	}
-	log.Printf("TransactionDB: %s", r.GetMessage())
 }
 
 func cumSum(arr []int32) (uint32, int64) {
