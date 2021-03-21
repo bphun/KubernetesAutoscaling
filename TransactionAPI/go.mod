@@ -8,4 +8,4 @@ require (
 	google.golang.org/protobuf v1.26.0
 )
 
-// replace bphun/k8sAutoscaling/TransactionAPI => ../TransactionAPI/TransactionAPI/
+replace github.com/bphun/k8sAutoscaling/TransactionAPI => ../TransactionAPI/TransactionAPI
