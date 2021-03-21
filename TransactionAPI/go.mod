@@ -1,4 +1,4 @@
-module bphun/k8sAutoscaling/TransactionAPI
+module github.com/bphun/k8sAutoscaling/TransactionAPI
 
 go 1.16
 

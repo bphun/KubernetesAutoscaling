@@ -1,4 +1,4 @@
-module bphun/k8sAutoscaling/CumSumApi
+module github.com/bphun/k8sAutoscaling/CumSumApi
 
 go 1.16
 
