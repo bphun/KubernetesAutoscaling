@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+option go_package = "bphun/k8sAutoscaling/TransactionAPI/TransactionAPI";
+
+package TransactionAPI;
+
+service TransactionAPI {
+  rpc SaveTransaction (TransactionRequest) returns (TransactionReply) {}
+}
+
+message TransactionRequest {
+  repeated sint32 inArr = 1 [packed=true];
+  repeated sint32 outArr = 2 [packed=true];
+}
+
+message TransactionReply {
+  string message = 1;
+}
+
