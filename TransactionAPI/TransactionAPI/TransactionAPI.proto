@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option go_package = "bphun/k8sAutoscaling/TransactionAPI/TransactionAPI";
+option go_package = "github.com/bphun/k8sAutoscaling/TransactionAPI/TransactionAPI";
 
 package TransactionAPI;
 
