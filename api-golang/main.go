@@ -82,6 +82,7 @@ func main() {
 		log.Fatalf("Error in Serve: %s", err)
 	}
 
+	listener.Close()
 	grpcInstanceConn.Close()
 	statsdClientInstance.Close()
 }
@@ -130,7 +131,7 @@ func postRequestHook(h fasthttp.RequestHandler) fasthttp.RequestHandler {
 }
 
 func updateTransactionHistory(inArr []int32, outArr []int32, requestStartTime uint32, executionTime int64) {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
 
 	grpcClient, _ := getGrpcClient()
