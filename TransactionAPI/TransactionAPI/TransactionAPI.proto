@@ -11,6 +11,8 @@ service TransactionAPI {
 message TransactionRequest {
   repeated sint32 inArr = 1 [packed=true];
   repeated sint32 outArr = 2 [packed=true];
+  uint32 startTime = 3;
+  int64 execTime = 4;
 }
 
 message TransactionReply {
