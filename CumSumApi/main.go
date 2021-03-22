@@ -15,7 +15,7 @@ import (
 
 	"github.com/valyala/fasthttp/reuseport"
 
-	pb "github.com/bphun/KubernetesAutoscaling/TransactionAPI"
+	pb "github.com/bphun/KubernetesAutoscaling/TransactionAPI/TransactionAPI"
 	// _ "net/http/pprof"
 )
 
@@ -40,7 +40,7 @@ type ClientStats struct {
 const (
 	DEFAULT_HTTP_ADDR = ":8080"
 	STATSD_ADDR       = "127.0.0.1:9125"
-	GRPC_ADDR         = "localhost:50051"
+	GRPC_ADDR         = "localhost:5001"
 )
 
 var (
@@ -77,6 +77,7 @@ func main() {
 	}
 
 	defer listener.Close()
+	log.Printf("Listening on %s", *httpAddr)
 
 	if err := fasthttp.Serve(listener, requestRouter.Handler); err != nil {
 		log.Fatalf("Error in Serve: %s", err)

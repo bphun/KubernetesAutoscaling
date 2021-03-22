@@ -1,27 +1,18 @@
 FROM golang:1.16.2
 
-RUN adduser api-user
+RUN adduser cumsum-api-user
 
-WORKDIR /home/api
-
-RUN mkdir ../TransactionAPI
+WORKDIR /home/cumsum-api
 
 COPY main.go main.go
 COPY go.mod go.mod
-COPY ../TransactionAPI ../TransactionAPI
+COPY go.sum go.sum
 
-# RUN go get -u github.com/fasthttp/router && \
-#     go get -u github.com/valyala/fasthttp && \
-#     go get -u github.com/valyala/fasthttp/reuseport && \
-#     go get -u github.com/cactus/go-statsd-client/statsd && \
-#     go build && \
-#     chown -R api-user:api-user ./ 
-    
-RUN go mod vendor \
-    go build && \
-    chown -R api-user:api-user ./ 
+RUN go mod vendor && \
+    go build main.go && \
+    chown -R cumsum-api-user:cumsum-api-user ./ 
 
-USER api-user
+USER cumsum-api-user
 
 # ENV GOMAXPROCS=1
 

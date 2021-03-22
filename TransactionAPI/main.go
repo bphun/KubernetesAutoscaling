@@ -30,7 +30,7 @@ type ObjectID struct {
 }
 
 const (
-	GRPC_PORT         = ":50051"
+	GRPC_PORT         = ":5001"
 	CONNECTION_STRING = "mongodb://localhost:27017"
 	DB                = "db_transaction_manager"
 	TRANSACTIONS      = "col_transaction"

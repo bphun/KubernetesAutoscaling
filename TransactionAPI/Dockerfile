@@ -2,20 +2,19 @@ FROM golang:1.16.2
 
 RUN adduser transaction-api-user
 
-WORKDIR /home/api
+WORKDIR /home/transaction-api
 
 COPY main.go main.go
+COPY go.mod go.mod
+COPY go.sum go.sum
 
-RUN go get -u github.com/fasthttp/router && \
-    go get -u github.com/valyala/fasthttp && \
-    go get -u github.com/valyala/fasthttp/reuseport && \
-    go get -u github.com/cactus/go-statsd-client/statsd && \
-    go build && \
+RUN go mod vendor && \
+    go build main.go && \
     chown -R transaction-api-user:transaction-api-user ./ 
-    
+
 USER transaction-api-user
 
 # ENV GOMAXPROCS=1
 
-EXPOSE 5000
+EXPOSE 5001
 ENTRYPOINT ["./main"]
