@@ -34,5 +34,16 @@ data:
               resource: pod
         name:
           matches: ""
-          as: "requests_per_second"
+          as: "cum_sum_api_requests_per_second"
         metricsQuery: rate(api_request_duration_count[1m])
+      - seriesQuery: 'grpc_server_started_total'
+        resources:
+          overrides:
+            namespace:
+              resource: namespace
+            pod:
+              resource: pod
+        name:
+          matches: ""
+          as: "transaction_api_queries_per_second"
+        metricsQuery: sum(irate(grpc_server_started_total{grpc_service="TransactionAPI.TransactionAPI"}[1m]))

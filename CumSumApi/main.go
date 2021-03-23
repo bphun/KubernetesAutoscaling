@@ -40,11 +40,11 @@ type ClientStats struct {
 const (
 	DEFAULT_HTTP_ADDR = ":8080"
 	STATSD_ADDR       = "127.0.0.1:9125"
-	GRPC_ADDR         = "localhost:5001"
+	DEFAULT_GRPC_ADDR = "localhost:5001"
 )
 
 var (
-	httpAddr = flag.String("addr", DEFAULT_HTTP_ADDR, "TCP address to listen to")
+	httpAddr = flag.String("httpAddr", DEFAULT_HTTP_ADDR, "TCP address to listen to")
 
 	statsdConfig = &statsd.ClientConfig{
 		Address:       STATSD_ADDR,
@@ -58,6 +58,7 @@ var (
 	clientStats             ClientStats
 	statsdOnce              sync.Once
 
+	grpcAddr           = flag.String("grpcAddr", DEFAULT_GRPC_ADDR, "Address of Transaction gRPC server")
 	grpcInstanceClient pb.TransactionAPIClient
 	grpcInstanceConn   *grpc.ClientConn
 	grpcInstanceError  error
@@ -90,6 +91,8 @@ func main() {
 
 func getStatsdClient() (statsd.Statter, error) {
 	statsdOnce.Do(func() {
+		log.Printf("Connecting to statsD server at %s", STATSD_ADDR)
+
 		statsdClientInstance, statsdClientInstanceErr = statsd.NewClientWithConfig(statsdConfig)
 		if statsdClientInstanceErr != nil {
 			log.Fatalf("Unable to connect to statsD: %v", statsdClientInstanceErr)
@@ -102,12 +105,13 @@ func getStatsdClient() (statsd.Statter, error) {
 
 func getGrpcClient() (pb.TransactionAPIClient, error) {
 	grpcOnce.Do(func() {
-		grpcInstanceConn, grpcInstanceError = grpc.Dial(GRPC_ADDR, grpc.WithInsecure(), grpc.WithBlock())
+		log.Printf("Connecting to gRPC server at %s", *grpcAddr)
+
+		grpcInstanceConn, grpcInstanceError = grpc.Dial(*grpcAddr, grpc.WithInsecure(), grpc.WithBlock())
 		if grpcInstanceError != nil {
 			log.Fatalf("Error: %v", grpcInstanceError)
 		}
-
-		log.Printf("Connected to gRPC server at %s", GRPC_ADDR)
+		log.Printf("Connected to gRPC server at %s", *grpcAddr)
 
 		grpcInstanceClient = pb.NewTransactionAPIClient(grpcInstanceConn)
 	})

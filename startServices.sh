@@ -12,7 +12,9 @@ kubectl apply -f k8s/monitoring/service-account.yaml
 kubectl apply -f k8s/monitoring/node-exporter.yaml 
 kubectl apply -f k8s/monitoring/cadvisor.yaml 
 kubectl apply -f k8s/monitoring/prometheus-adapter/config-map.yaml 
-kubectl apply -f k8s/api/api.yaml
+kubectl apply -f k8s/cum-sum-api/cum-sum-api.yaml
+kubectl apply -f k8s/transaction-api/transaction-api.yaml
+kubectl apply -f k8s/transaction-db/transaction-db.yaml
 kubectl apply -f k8s/monitoring/grafana.yaml 
 kubectl apply -f k8s/monitoring/prometheus.yaml 
 kubectl apply -f k8s/nginx/nginx.yaml 
@@ -28,4 +30,5 @@ prometheus-community/prometheus-adapter
 # --set rules.default=False \
 
 helm install nginx-ingress ingress-nginx/ingress-nginx
-kubectl apply -f k8s/horizontal-autoscalers/api.yaml 
+kubectl apply -f k8s/horizontal-autoscalers/cum-sum-api.yaml 
+kubectl apply -f k8s/horizontal-autoscalers/transaction-api.yaml 

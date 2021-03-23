@@ -50,23 +50,97 @@ scrape_configs:
       target_label: service
       replacement: $1
       action: replace
-  - job_name: 'api_gunicorn'
+  - job_name: 'transaction-api'
+    scrape_interval: 5s
+    # metrics_path: /metrics
+    kubernetes_sd_configs:
+    - role: endpoints
+      namespaces:
+        names:
+        - transaction-api
+    relabel_configs:
+    - source_labels: [__meta_kubernetes_service_label_app]
+      separator: ;
+      regex: transaction-api
+      replacement: $1
+      action: keep
+    - source_labels: [__meta_kubernetes_endpoint_port_name]
+      separator: ;
+      regex: prometheus
+      replacement: $1
+      action: keep
+    - source_labels: [__meta_kubernetes_namespace]
+      separator: ;
+      regex: (.*)
+      target_label: namespace
+      replacement: $1
+      action: replace
+    - source_labels: [__meta_kubernetes_pod_name]
+      separator: ;
+      regex: (.*)
+      target_label: pod
+      replacement: $1
+      action: replace
+    - source_labels: [__meta_kubernetes_service_name]
+      separator: ;
+      regex: (.*)
+      target_label: service
+      replacement: $1
+      action: replace
+  - job_name: 'cum-sum-api'
     scrape_interval: 5s
     metrics_path: /statsd/metrics
     kubernetes_sd_configs:
     - role: endpoints
       namespaces:
         names:
-        - api
+        - cum-sum-api
     relabel_configs:
     - source_labels: [__meta_kubernetes_service_label_app]
       separator: ;
-      regex: api-service
+      regex: cum-sum-api
       replacement: $1
       action: keep
     - source_labels: [__meta_kubernetes_endpoint_port_name]
       separator: ;
       regex: statsd
+      replacement: $1
+      action: keep
+    - source_labels: [__meta_kubernetes_namespace]
+      separator: ;
+      regex: (.*)
+      target_label: namespace
+      replacement: $1
+      action: replace
+    - source_labels: [__meta_kubernetes_pod_name]
+      separator: ;
+      regex: (.*)
+      target_label: pod
+      replacement: $1
+      action: replace
+    - source_labels: [__meta_kubernetes_service_name]
+      separator: ;
+      regex: (.*)
+      target_label: service
+      replacement: $1
+      action: replace
+  - job_name: 'mongodb'
+    scrape_interval: 5s
+    metrics_path: /metrics
+    kubernetes_sd_configs:
+    - role: endpoints
+      namespaces:
+        names:
+        - transaction-db
+    relabel_configs:
+    - source_labels: [__meta_kubernetes_service_label_app]
+      separator: ;
+      regex: transaction-db
+      replacement: $1
+      action: keep
+    - source_labels: [__meta_kubernetes_endpoint_port_name]
+      separator: ;
+      regex: prometheus
       replacement: $1
       action: keep
     - source_labels: [__meta_kubernetes_namespace]

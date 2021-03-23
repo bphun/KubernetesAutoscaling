@@ -1,0 +1,57 @@
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: transaction-api
+  name: transaction-api
+  labels:
+    app: transaction-api
+spec:
+  selector:
+    app: transaction-api
+  ports:
+  - port: 5001
+    name: http
+  - port: 9090
+    name: prometheus
+  type: NodePort
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: transaction-api
+  name: transaction-api
+spec:
+  selector:
+    matchLabels:
+      app: transaction-api
+      run: transaction-api
+      tier: backend
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        run: transaction-api
+        app: transaction-api
+        tier: backend
+    # spec:
+    #   volumes:
+    #     - name: transaction-api-pv-volume
+    #       persistentVolumeClaim:
+    #         claimName: transaction-api-pv-claim
+    spec:
+      containers:
+      - name: transaction-api
+        image: public.ecr.aws/h6v8s1y1/k8s-autoscaling:transaction-api
+        imagePullPolicy: Always
+        # resources:
+        #   requests:
+        #     cpu: "4000m"
+        #     memory: "5000Mi"
+        #   limits:
+        #     cpu: "7000m"
+        #     memory: "14000Mi"
+        # volumeMounts:
+        # - name: transaction-api-service-pv-volume
+        #   mountPath: /etc/api-logs/
+        ports:
+        - containerPort: 5001

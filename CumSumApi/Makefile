@@ -1,4 +1,4 @@
-TAG = api-golang
+TAG = cum-sum-api
 PREFIX = public.ecr.aws/h6v8s1y1/k8s-autoscaling
 
 build: clean

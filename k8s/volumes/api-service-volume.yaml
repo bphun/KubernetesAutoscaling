@@ -16,7 +16,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  namespace: api
+  namespace: cum-sum-api
   name: api-service-pv-claim
 spec:
   storageClassName: manual

@@ -8,9 +8,9 @@ metadata:
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: api
+  name: cum-sum-api
   labels: 
-    name: api
+    name: cum-sum-api
 ---
 apiVersion: v1
 kind: Namespace
@@ -32,3 +32,17 @@ metadata:
   name: metallb-system
   labels:
     app: metallb
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: transaction-api
+  labels:
+    app: transaction-api
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: transaction-db
+  labels:
+    app: transaction-db

@@ -1,0 +1,62 @@
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: transaction-db
+  name: transaction-db
+  labels:
+    app: transaction-db
+spec:
+  selector:
+    app: transaction-db
+  ports:
+  - port: 27017
+    name: http
+  - port: 9216
+    name: prometheus
+  type: NodePort
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: transaction-db
+  name: transaction-db
+spec:
+  selector:
+    matchLabels:
+      app: transaction-db
+      run: transaction-db
+      tier: backend
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        run: transaction-db
+        app: transaction-db
+        tier: backend
+    # spec:
+    #   volumes:
+    #     - name: transaction-db-pv-volume
+    #       persistentVolumeClaim:
+    #         claimName: transaction-db-pv-claim
+    spec:
+      containers:
+      - name: transaction-db
+        image: public.ecr.aws/h6v8s1y1/k8s-autoscaling:transaction-db
+        imagePullPolicy: Always
+        # resources:
+        #   requests:
+        #     cpu: "4000m"
+        #     memory: "5000Mi"
+        #   limits:
+        #     cpu: "7000m"
+        #     memory: "14000Mi"
+        # volumeMounts:
+        # - name: transaction-db-pv-volume
+        #   mountPath: /etc/api-logs/
+        ports:
+        - containerPort: 27017
+      - name: mongodb-exporter
+        image: public.ecr.aws/h6v8s1y1/k8s-autoscaling:mongodb-exporter
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 9216

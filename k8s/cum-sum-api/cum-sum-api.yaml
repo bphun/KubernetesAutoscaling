@@ -1,13 +1,13 @@
 apiVersion: v1
 kind: Service
 metadata:
-  namespace: api
-  name: api-service
+  namespace: cum-sum-api
+  name: cum-sum-api
   labels:
-    app: api-service
+    app: cum-sum-api
 spec:
   selector:
-    app: api-service
+    app: cum-sum-api
   ports:
   - port: 5000
     name: http
@@ -18,43 +18,43 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  namespace: api
-  name: api-service
+  namespace: cum-sum-api
+  name: cum-sum-api
 spec:
   selector:
     matchLabels:
-      app: api-service
-      run: api-service
+      app: cum-sum-api
+      run: cum-sum-api
       tier: backend
   replicas: 1
   template:
     metadata:
       labels:
-        run: api-service
-        app: api-service
+        run: cum-sum-api
+        app: cum-sum-api
         tier: backend
     spec:
       volumes:
-        - name: api-service-pv-volume
+        - name: cum-sum-api-pv-volume
           persistentVolumeClaim:
-            claimName: api-service-pv-claim
+            claimName: cum-sum-api-pv-claim
     spec:
       containers:
-      - name: api-service
-        image: public.ecr.aws/h6v8s1y1/k8s-autoscaling:api-golang
+      - name: cum-sum-api
+        image: public.ecr.aws/h6v8s1y1/k8s-autoscaling:cum-sum-api
         imagePullPolicy: Always
-        resources:
-          requests:
-            cpu: "4000m"
-            memory: "5000Mi"
-          limits:
-            cpu: "7000m"
-            memory: "14000Mi"
+        # resources:
+        #   requests:
+        #     cpu: "4000m"
+        #     memory: "5000Mi"
+        #   limits:
+        #     cpu: "7000m"
+        #     memory: "14000Mi"
         # volumeMounts:
-        # - name: api-service-pv-volume
+        # - name: cum-sum-api-service-pv-volume
         #   mountPath: /etc/api-logs/
         ports:
-        - containerPort: 5000
+        - containerPort: 5001
       - name: statsd
         image: public.ecr.aws/h6v8s1y1/k8s-autoscaling:statsd
         imagePullPolicy: Always
@@ -62,19 +62,16 @@ spec:
         - containerPort: 9091
         - containerPort: 9125
           protocol: UDP
-        env:
-        - name: FLASK_ENV
-          value: "production"
 # ---
 # apiVersion: v1
 # kind: Pod
 # metadata:
-#   namespace: api
-#   name: api-service
+#   namespace: cum-sum-api
+#   name: cum-sum-api-service
 # spec:
 #   containers:
-#       - name: api-service
-#         image: public.ecr.aws/h6v8s1y1/k8s-autoscaling:api-golang
+#       - name: cum-sum-api-service
+#         image: public.ecr.aws/h6v8s1y1/k8s-autoscaling:cum-sum-api
 #         imagePullPolicy: Always
 #         resources:
 #           requests:
@@ -84,7 +81,7 @@ spec:
 #             cpu: "7000m"
 #             memory: "14000Mi"
 #         # volumeMounts:
-#         # - name: api-service-pv-volume
+#         # - name: cum-sum-api-service-pv-volume
 #         #   mountPath: /etc/api-logs/
 #         ports:
 #         - containerPort: 5000

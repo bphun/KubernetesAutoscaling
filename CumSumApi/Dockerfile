@@ -17,4 +17,4 @@ USER cumsum-api-user
 # ENV GOMAXPROCS=1
 
 EXPOSE 5000
-ENTRYPOINT ["./main", "-addr=0.0.0.0:5000"]
+ENTRYPOINT ["./main", "-httpAddr=0.0.0.0:5000", "-grpcAddr=transaction-api.transaction-api:5001"]

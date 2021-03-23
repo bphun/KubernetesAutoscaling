@@ -1,9 +1,17 @@
-api-build:
-	cd api/ && \
+cum-sum-api-build:
+	cd CumSumApi/ && \
 	make build
 
-api-go-build:
-	cd api-golang/ && \
+transaction-api-build:
+	cd TransactionAPI/ && \
+	make build
+
+transaction-db-build:
+	cd TransactionDB/ && \
+	make build
+
+mongodb-exporter-build:
+	cd mongodb-exporter/ && \
 	make build
 
 grafana-build:
@@ -26,14 +34,22 @@ statsd-exporter-build:
 	cd statsd-exporter/ && \
 	make build
 
-api-push:
-	cd api/ && \
+mongodb-exporter-push:
+	cd mongodb-exporter/ && \
 	make push
 
-api-go-push:
-	cd api-golang/ && \
+cum-sum-api-push:
+	cd CumSumApi/ && \
 	make push
 	
+transaction-api-push:
+	cd TransactionAPI/ && \
+	make push
+
+transaction-db-push:
+	cd TransactionDB/ && \
+	make push
+
 grafana-push:
 	cd grafana && \
 	make push
@@ -54,5 +70,5 @@ statsd-exporter-push:
 	cd statsd-exporter/ && \
 	make push
 
-build: api-build api-go-build grafana-build nginx-build nginx-exporter-build prometheus-build statsd-exporter-build
-push: api-push api-go-push grafana-push nginx-push nginx-exporter-push prometheus-push statsd-exporter-push
+build: cum-sum-api-build transaction-api-build transaction-db-build mongodb-exporter-build grafana-build nginx-build nginx-exporter-build prometheus-build statsd-exporter-build
+push: cum-sum-api-push transaction-api-push transaction-db-push mongodb-exporter-push grafana-push nginx-push nginx-exporter-push prometheus-push statsd-exporter-push

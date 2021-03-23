@@ -7,6 +7,7 @@ WORKDIR /home/transaction-api
 COPY main.go main.go
 COPY go.mod go.mod
 COPY go.sum go.sum
+COPY TransactionAPI TransactionAPI
 
 RUN go mod vendor && \
     go build main.go && \
@@ -17,4 +18,4 @@ USER transaction-api-user
 # ENV GOMAXPROCS=1
 
 EXPOSE 5001
-ENTRYPOINT ["./main"]
+ENTRYPOINT ["./main", "-mdbAddr=mongodb://transaction-db.transaction-db:27017"]

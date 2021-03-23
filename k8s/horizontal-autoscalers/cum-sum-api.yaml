@@ -1,20 +1,20 @@
 apiVersion: autoscaling/v2beta2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: api-hpa
-  namespace: api
+  name: cum-sum-api-hpa
+  namespace: cum-sum-api
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: api-service
+    name: cum-sum-api
   minReplicas: 1
   maxReplicas: 10
   metrics:
   - type: Pods
     pods:
       metric:
-        name: requests_per_second
+        name: cum_sum_api_requests_per_second
       target:
         type: AverageValue
         averageValue: 3k
