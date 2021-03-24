@@ -1,4 +1,4 @@
-package Tracing
+package main
 
 import (
 	"io"
