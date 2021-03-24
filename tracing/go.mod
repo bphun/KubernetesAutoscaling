@@ -1,4 +1,4 @@
-module github.com/bphun/KubernetesAutoscaling/Tracing
+module github.com/bphun/KubernetesAutoscaling/tracing
 
 go 1.16
 

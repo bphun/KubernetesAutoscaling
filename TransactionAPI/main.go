@@ -8,8 +8,8 @@ import (
 	"net/http"
 	"sync"
 
-	tracing "github.com/bphun/KubernetesAutoscaling/Tracing"
 	pb "github.com/bphun/KubernetesAutoscaling/TransactionAPI/TransactionAPI"
+	tracing "github.com/bphun/KubernetesAutoscaling/tracing"
 	"github.com/grpc-ecosystem/go-grpc-prometheus"
 	"github.com/opentracing/opentracing-go"
 
