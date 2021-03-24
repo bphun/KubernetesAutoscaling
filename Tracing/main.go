@@ -6,6 +6,7 @@ import (
 	"github.com/opentracing/opentracing-go"
 	"github.com/uber/jaeger-client-go/config"
 	jaegercfg "github.com/uber/jaeger-client-go/config"
+	jprom "github.com/uber/jaeger-lib/metrics/prometheus"
 )
 
 func NewTracer() (opentracing.Tracer, io.Closer, error) {
