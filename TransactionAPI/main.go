@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"flag"
+	"io"
 	"log"
 	"net"
 	"net/http"
@@ -10,6 +11,7 @@ import (
 
 	pb "github.com/bphun/KubernetesAutoscaling/TransactionAPI/TransactionAPI"
 	"github.com/grpc-ecosystem/go-grpc-prometheus"
+	"github.com/opentracing/opentracing-go"
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -17,6 +19,13 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"google.golang.org/grpc"
+
+	"github.com/uber/jaeger-client-go/config"
+	jaegercfg "github.com/uber/jaeger-client-go/config"
+	jprom "github.com/uber/jaeger-lib/metrics/prometheus"
+
+	"github.com/grpc-ecosystem/go-grpc-middleware"
+	"github.com/grpc-ecosystem/go-grpc-middleware/tracing/opentracing"
 )
 
 type server struct {
@@ -130,6 +139,13 @@ func init() {
 func main() {
 	flag.Parse()
 
+	tracer, closer, err := newTracer()
+	if err != nil {
+		log.Fatalf("Error: %v", err)
+	}
+	opentracing.SetGlobalTracer(tracer)
+	defer closer.Close()
+
 	lis, err := net.Listen("tcp", GRPC_PORT)
 	if err != nil {
 		log.Fatalf("Failed to listen: %v", err)
@@ -137,12 +153,22 @@ func main() {
 	defer lis.Close()
 
 	httpServer := &http.Server{Handler: promhttp.HandlerFor(reg, promhttp.HandlerOpts{}), Addr: PROMETHEUS_PORT}
+	defer httpServer.Close()
+
 	log.Printf("gRPC server listening on port %s", GRPC_PORT)
 
 	grpc_prometheus.EnableHandlingTimeHistogram()
 	grpcServer := grpc.NewServer(
-		grpc.StreamInterceptor(grpcMetrics.StreamServerInterceptor()),
-		grpc.UnaryInterceptor(grpcMetrics.UnaryServerInterceptor()),
+		grpc.StreamInterceptor(grpc_middleware.ChainStreamServer(
+			// add opentracing stream interceptor to chain
+			grpc_opentracing.StreamServerInterceptor(grpc_opentracing.WithTracer(tracer)),
+		)),
+		grpc.UnaryInterceptor(grpc_middleware.ChainUnaryServer(
+			// add opentracing unary interceptor to chain
+			grpc_opentracing.UnaryServerInterceptor(grpc_opentracing.WithTracer(tracer)),
+		)),
+		// grpc.StreamInterceptor(grpcMetrics.StreamServerInterceptor()),
+		// grpc.UnaryInterceptor(grpcMetrics.UnaryServerInterceptor()),
 	)
 	pb.RegisterTransactionAPIServer(grpcServer, &server{})
 	grpcMetrics.InitializeMetrics(grpcServer)

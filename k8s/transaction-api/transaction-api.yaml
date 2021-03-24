@@ -55,3 +55,12 @@ spec:
         #   mountPath: /etc/api-logs/
         ports:
         - containerPort: 5001
+        env:
+        - name: JAEGER_SERVICE_NAME
+          value: transaction-api
+        - name: JAEGER_AGENT_HOST   # NOTE: Point to the Agent daemon on the Node
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+        - name: JAEGER_AGENT_PORT
+          value: "6831"

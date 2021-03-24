@@ -1,6 +1,6 @@
 global:
-  scrape_interval:     5s # Set the scrape interval to every 15 seconds. Default is every 1 minute.
-  evaluation_interval: 5s # Evaluate rules every 15 seconds. The default is every 1 minute.
+  scrape_interval:     1s # Set the scrape interval to every 15 seconds. Default is every 1 minute.
+  evaluation_interval: 1s # Evaluate rules every 15 seconds. The default is every 1 minute.
   # scrape_timeout is set to the global default (10s).
 
 # Load rules once and periodically evaluate them according to the global 'evaluation_interval'.
@@ -12,7 +12,7 @@ rule_files:
 # Here it's Prometheus itself.
 scrape_configs:
   - job_name: 'prometheus'
-    scrape_interval: 5s
+    scrape_interval: 1s
     metrics_path: /prometheus/metrics
     # static_configs:
     #   - targets: ['localhost:9090']
@@ -51,7 +51,7 @@ scrape_configs:
       replacement: $1
       action: replace
   - job_name: 'transaction-api'
-    scrape_interval: 5s
+    scrape_interval: 1s
     # metrics_path: /metrics
     kubernetes_sd_configs:
     - role: endpoints
@@ -88,7 +88,7 @@ scrape_configs:
       replacement: $1
       action: replace
   - job_name: 'cum-sum-api'
-    scrape_interval: 5s
+    scrape_interval: 1s
     metrics_path: /statsd/metrics
     kubernetes_sd_configs:
     - role: endpoints
@@ -125,7 +125,7 @@ scrape_configs:
       replacement: $1
       action: replace
   - job_name: 'mongodb'
-    scrape_interval: 5s
+    scrape_interval: 1s
     metrics_path: /metrics
     kubernetes_sd_configs:
     - role: endpoints
@@ -162,7 +162,7 @@ scrape_configs:
       replacement: $1
       action: replace
   - job_name: 'nginx-exporter'
-    scrape_interval: 5s
+    scrape_interval: 1s
     # static_configs:
     #   - targets: ['localhost:9093']
     kubernetes_sd_configs:
@@ -200,7 +200,7 @@ scrape_configs:
       replacement: $1
       action: replace
   - job_name: 'node-exporter'
-    scrape_interval: 5s
+    scrape_interval: 1s
     # static_configs:
     #   - targets: ['192.168.49.2:9100']
     kubernetes_sd_configs:
@@ -218,7 +218,7 @@ scrape_configs:
     - source_labels: [__meta_kubernetes_pod_node_name]
       target_label: node
   - job_name: cadvisor
-    scrape_interval: 5s
+    scrape_interval: 1s
     metrics_path: /cadvisor/metrics
     tls_config:
       insecure_skip_verify: true
@@ -240,7 +240,7 @@ scrape_configs:
       target_label: node
   # - job_name: 'api-service'
   #   metrics_path: '/metrics'
-  #   scrape_interval: 5s
+  #   scrape_interval: 1s
 
   #   kubernetes_sd_configs:
   #   - role: endpoints

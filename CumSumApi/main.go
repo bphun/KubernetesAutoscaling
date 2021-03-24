@@ -4,16 +4,24 @@ import (
 	"context"
 	"encoding/json"
 	"flag"
+	"io"
 	"log"
 	"sync"
 	"time"
 
 	"github.com/cactus/go-statsd-client/v5/statsd"
 	"github.com/fasthttp/router"
+	grpc_opentracing "github.com/grpc-ecosystem/go-grpc-middleware/tracing/opentracing"
+	"github.com/uber/jaeger-client-go/config"
 	"github.com/valyala/fasthttp"
 	"google.golang.org/grpc"
 
 	"github.com/valyala/fasthttp/reuseport"
+
+	"github.com/grpc-ecosystem/go-grpc-middleware"
+	"github.com/opentracing/opentracing-go"
+	jaegercfg "github.com/uber/jaeger-client-go/config"
+	jprom "github.com/uber/jaeger-lib/metrics/prometheus"
 
 	pb "github.com/bphun/KubernetesAutoscaling/TransactionAPI/TransactionAPI"
 	// _ "net/http/pprof"
@@ -103,11 +111,36 @@ func getStatsdClient() (statsd.Statter, error) {
 	return statsdClientInstance, statsdClientInstanceErr
 }
 
+func newTracer() (opentracing.Tracer, io.Closer, error) {
+	// load config from environment variables
+	cfg, _ := jaegercfg.FromEnv()
+
+	// create tracer from config
+	return cfg.NewTracer(
+		config.Metrics(jprom.New()),
+	)
+}
+
 func getGrpcClient() (pb.TransactionAPIClient, error) {
 	grpcOnce.Do(func() {
 		log.Printf("Connecting to gRPC server at %s", *grpcAddr)
 
-		grpcInstanceConn, grpcInstanceError = grpc.Dial(*grpcAddr, grpc.WithInsecure(), grpc.WithBlock())
+		tracer, closer, err := newTracer()
+		if err != nil {
+			log.Fatalf("Error: %v", err)
+		}
+		defer closer.Close()
+
+		grpcInstanceConn, grpcInstanceError = grpc.Dial(*grpcAddr,
+			grpc.WithInsecure(),
+			grpc.WithBlock(),
+			grpc.WithStreamInterceptor(grpc_middleware.ChainStreamClient(
+				grpc_opentracing.StreamClientInterceptor(grpc_opentracing.WithTracer(tracer)),
+			)),
+			grpc.WithUnaryInterceptor(grpc_middleware.ChainUnaryClient(
+				grpc_opentracing.UnaryClientInterceptor(grpc_opentracing.WithTracer(tracer)),
+			)),
+		)
 		if grpcInstanceError != nil {
 			log.Fatalf("Error: %v", grpcInstanceError)
 		}
@@ -164,9 +197,7 @@ func processCumSumRequest(ctx *fasthttp.RequestCtx) {
 	} else {
 		origArray := make([]int32, len(postBody.Arr))
 		cumSumArr = postBody.Arr
-
 		copy(origArray, cumSumArr)
-
 		requestStartTime, executionTime = cumSum(cumSumArr)
 
 		go updateTransactionHistory(origArray, cumSumArr, requestStartTime, executionTime)
