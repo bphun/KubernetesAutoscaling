@@ -3,12 +3,12 @@ package main
 import (
 	"context"
 	"flag"
-	"io"
 	"log"
 	"net"
 	"net/http"
 	"sync"
 
+	tracing "github.com/bphun/KubernetesAutoscaling/Tracing"
 	pb "github.com/bphun/KubernetesAutoscaling/TransactionAPI/TransactionAPI"
 	"github.com/grpc-ecosystem/go-grpc-prometheus"
 	"github.com/opentracing/opentracing-go"
@@ -20,12 +20,8 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"google.golang.org/grpc"
 
-	"github.com/uber/jaeger-client-go/config"
-	jaegercfg "github.com/uber/jaeger-client-go/config"
-	jprom "github.com/uber/jaeger-lib/metrics/prometheus"
-
 	"github.com/grpc-ecosystem/go-grpc-middleware"
-	"github.com/grpc-ecosystem/go-grpc-middleware/tracing/opentracing"
+	grpc_opentracing "github.com/grpc-ecosystem/go-grpc-middleware/tracing/opentracing"
 )
 
 type server struct {
@@ -139,7 +135,7 @@ func init() {
 func main() {
 	flag.Parse()
 
-	tracer, closer, err := newTracer()
+	tracer, closer, err := tracing.NewTracer()
 	if err != nil {
 		log.Fatalf("Error: %v", err)
 	}
