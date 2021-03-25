@@ -14,7 +14,6 @@ func NewTracer() (opentracing.Tracer, io.Closer, error) {
 	cfg, _ := jaegercfg.FromEnv()
 
 	// create tracer from config
-
 	return cfg.NewTracer(
 		config.Metrics(jprom.New()),
 	)
