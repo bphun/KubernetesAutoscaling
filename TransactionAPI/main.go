@@ -11,7 +11,7 @@ import (
 	tracing "github.com/bphun/KubernetesAutoscaling/Tracing"
 	pb "github.com/bphun/KubernetesAutoscaling/TransactionAPI/TransactionAPI"
 	"github.com/grpc-ecosystem/go-grpc-prometheus"
-	"github.com/opentracing/opentracing-go"
+	opentracing "github.com/opentracing/opentracing-go"
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -60,10 +60,10 @@ var (
 	grpcMetrics = grpc_prometheus.NewServerMetrics()
 
 	// Create a customized counter metric.
-	customizedCounterMetric = prometheus.NewCounterVec(prometheus.CounterOpts{
-		Name: "demo_server_say_hello_method_handle_count",
-		Help: "Total number of RPCs handled on the server.",
-	}, []string{"name"})
+	// customizedCounterMetric = prometheus.NewCounterVec(prometheus.CounterOpts{
+	// 	Name: "demo_server_say_hello_method_handle_count",
+	// 	Help: "Total number of RPCs handled on the server.",
+	// }, []string{"name"})
 )
 
 func (s *server) SaveTransaction(ctx context.Context, in *pb.TransactionRequest) (*pb.TransactionReply, error) {
@@ -113,13 +113,17 @@ func getMongoClient() (*mongo.Client, error) {
 }
 
 func createTransaction(task Transaction) (*mongo.InsertOneResult, error) {
+	tracer := opentracing.GlobalTracer()
 	client, err := getMongoClient()
+
 	if err != nil {
 		return nil, err
 	}
 	collection := client.Database(DB).Collection(TRANSACTIONS)
 
+	span := tracer.StartSpan("TransactionInsert")
 	r, err := collection.InsertOne(context.Background(), task)
+	span.Finish()
 	if err != nil {
 		return nil, err
 	}
@@ -128,19 +132,19 @@ func createTransaction(task Transaction) (*mongo.InsertOneResult, error) {
 
 func init() {
 	// Register standard server metrics and customized metrics to registry.
-	reg.MustRegister(grpcMetrics, customizedCounterMetric)
-	customizedCounterMetric.WithLabelValues("Test")
+	// reg.MustRegister(grpcMetrics, customizedCounterMetric)
+	// customizedCounterMetric.WithLabelValues("Test")
 }
 
 func main() {
 	flag.Parse()
 
 	tracer, closer, err := tracing.NewTracer()
+	defer closer.Close()
 	if err != nil {
 		log.Fatalf("Error: %v", err)
 	}
 	opentracing.SetGlobalTracer(tracer)
-	defer closer.Close()
 
 	lis, err := net.Listen("tcp", GRPC_PORT)
 	if err != nil {

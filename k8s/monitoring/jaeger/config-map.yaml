@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: jaeger-configuration
+  namespace: monitoring
+  labels:
+    app: jaeger
+    jaeger-infra: configuration
+data:
+  span-storage-type: memory

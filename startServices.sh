@@ -17,13 +17,6 @@ kubectl apply -f k8s/transaction-api/transaction-api.yaml
 kubectl apply -f k8s/transaction-db/transaction-db.yaml
 kubectl apply -f k8s/monitoring/grafana.yaml 
 kubectl apply -f k8s/monitoring/prometheus.yaml 
-kubectl create -n monitoring -f https://raw.githubusercontent.com/jaegertracing/jaeger-operator/master/deploy/cluster_role.yaml
-kubectl create -n monitoring -f https://raw.githubusercontent.com/jaegertracing/jaeger-operator/master/deploy/cluster_role_binding.yaml
-kubectl create -n monitoring -f https://raw.githubusercontent.com/jaegertracing/jaeger-operator/master/deploy/crds/jaegertracing.io_jaegers_crd.yaml
-kubectl create -n monitoring -f https://raw.githubusercontent.com/jaegertracing/jaeger-operator/master/deploy/service_account.yaml
-kubectl create -n monitoring -f https://raw.githubusercontent.com/jaegertracing/jaeger-operator/master/deploy/role.yaml
-kubectl create -n monitoring -f https://raw.githubusercontent.com/jaegertracing/jaeger-operator/master/deploy/role_binding.yaml
-kubectl create -n monitoring -f https://raw.githubusercontent.com/jaegertracing/jaeger-operator/master/deploy/operator.yaml
 kubectl apply -f k8s/nginx/nginx.yaml 
 kubectl apply -f k8s/ingress/ingress.yaml
 
@@ -38,4 +31,10 @@ prometheus-community/prometheus-adapter
 
 helm install nginx-ingress ingress-nginx/ingress-nginx
 kubectl apply -f k8s/horizontal-autoscalers/cum-sum-api.yaml 
-kubectl apply -f k8s/horizontal-autoscalers/transaction-api.yaml 
+kubectl apply -f k8s/horizontal-autoscalers/transaction-api.yaml
+
+sleep 30
+
+kubectl apply -f k8s/monitoring/jaeger/jaeger-agent.yaml 
+kubectl apply -f k8s/monitoring/jaeger/jaeger-collector.yaml 
+kubectl apply -f k8s/monitoring/jaeger/jaeger-query.yaml 

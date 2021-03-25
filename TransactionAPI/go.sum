@@ -31,6 +31,8 @@ github.com/beorn7/perks v1.0.1/go.mod h1:G2ZrVWU2WbWT9wwq4/hrbKbnv/1ERSJQ0ibhJ6r
 github.com/bgentry/speakeasy v0.1.0/go.mod h1:+zsyZBPWlz7T6j88CTgSN5bM796AkVf0kBD4zp0CCIs=
 github.com/bphun/KubernetesAutoscaling/Tracing v0.0.0-20210324211613-db7a49dc633a h1:UiJu8mXLvUhUb7S+ewKa4bLwZqWTfiU8hiRhR5EUScc=
 github.com/bphun/KubernetesAutoscaling/Tracing v0.0.0-20210324211613-db7a49dc633a/go.mod h1:yA6N+Ja0W+AfIYca9YdiDZXffI8Ojgpi+zbILRFpY8A=
+github.com/bphun/KubernetesAutoscaling/Tracing v0.0.0-20210324211738-07c8ff7bb59a h1:PqWQV7B7t5lR0pRLI/dUH5hKeQslydgsX1Vw24w4LJY=
+github.com/bphun/KubernetesAutoscaling/Tracing v0.0.0-20210324211738-07c8ff7bb59a/go.mod h1:yA6N+Ja0W+AfIYca9YdiDZXffI8Ojgpi+zbILRFpY8A=
 github.com/casbin/casbin/v2 v2.1.2/go.mod h1:YcPU1XXisHhLzuxH9coDNf2FbKpjGlbCg3n9yuLkIJQ=
 github.com/cenkalti/backoff v2.2.1+incompatible/go.mod h1:90ReRw6GdpyfrHakVjL/QHaoyV4aDUVVkXQJJJ3NXXM=
 github.com/census-instrumentation/opencensus-proto v0.2.1/go.mod h1:f6KPmirojxKA12rnyqOA5BBL4O983OfeGPqjHWSTneU=

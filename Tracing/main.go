@@ -14,7 +14,10 @@ func NewTracer() (opentracing.Tracer, io.Closer, error) {
 	cfg, _ := jaegercfg.FromEnv()
 
 	// create tracer from config
-	return cfg.NewTracer(
+
+	return cfg.NewTracer("transaction-api",
+		nil,
+		nil,
 		config.Metrics(jprom.New()),
 	)
 }
