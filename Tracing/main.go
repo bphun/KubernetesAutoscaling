@@ -15,9 +15,7 @@ func NewTracer() (opentracing.Tracer, io.Closer, error) {
 
 	// create tracer from config
 
-	return cfg.NewTracer("transaction-api",
-		nil,
-		nil,
+	return cfg.NewTracer(
 		config.Metrics(jprom.New()),
 	)
 }
