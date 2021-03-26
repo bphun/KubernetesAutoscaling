@@ -62,8 +62,6 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: status.hostIP
-        - name: JAEGER_AGENT_PORT
-          value: "6831"
       - name: statsd
         image: public.ecr.aws/h6v8s1y1/k8s-autoscaling:statsd
         imagePullPolicy: Always

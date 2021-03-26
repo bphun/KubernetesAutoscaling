@@ -115,13 +115,13 @@ func getMongoClient() (*mongo.Client, error) {
 func createTransaction(task Transaction) (*mongo.InsertOneResult, error) {
 	tracer := opentracing.GlobalTracer()
 	client, err := getMongoClient()
+	span := tracer.StartSpan("TransactionInsert")
 
 	if err != nil {
 		return nil, err
 	}
 	collection := client.Database(DB).Collection(TRANSACTIONS)
 
-	span := tracer.StartSpan("TransactionInsert")
 	r, err := collection.InsertOne(context.Background(), task)
 	span.Finish()
 	if err != nil {

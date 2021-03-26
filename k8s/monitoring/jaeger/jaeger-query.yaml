@@ -20,10 +20,10 @@ spec:
         jaeger-infra: jaeger-query
     spec:
       containers:
-      - image: jaegertracing/jaeger-query:1.6.0
+      - image: jaegertracing/jaeger-query:1.22.0
         name: jaeger-query
-        # args: ["--config-file=/conf/query.yaml"]
-        args: ["--query.base-path=/jaeger", "--log-level=debug"]
+        args: ["--config-file=/conf/query.yaml", "--query.base-path=/jaeger", "--log-level=debug"]
+        # args: ["--query.base-path=/jaeger", "--log-level=debug"]
         ports:
         - containerPort: 16686
           protocol: TCP
@@ -31,16 +31,15 @@ spec:
           httpGet:
             path: "/"
             port: 16687
-            #volumeMounts:
-            #- name: jaeger-configuration-volume
-            #mountPath: /conf
+        volumeMounts:
+        - name: jaeger-configuration-volume
+          mountPath: /conf
         env:
         - name: SPAN_STORAGE_TYPE
-          value: memory
-          #valueFrom:
-          #  configMapKeyRef:
-          #    name: jaeger-configuration
-          #    key: span-storage-type
+          valueFrom:
+            configMapKeyRef:
+              name: jaeger-configuration
+              key: span-storage-type
         resources:
           requests:
             memory: 100M
@@ -48,13 +47,13 @@ spec:
           limits:
             memory: 100M
             cpu: 100m
-            #volumes:
-            #- configMap:
-            #name: jaeger-configuration
-            #items:
-            #  - key: query
-            #    path: query.yaml
-            #name: jaeger-configuration-volume
+      volumes:
+        - configMap:
+            name: jaeger-configuration
+            items:
+              - key: query
+                path: query.yaml
+          name: jaeger-configuration-volume
 ---
 apiVersion: v1
 kind: Service

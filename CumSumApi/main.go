@@ -12,6 +12,7 @@ import (
 	"github.com/cactus/go-statsd-client/v5/statsd"
 	"github.com/fasthttp/router"
 	grpc_opentracing "github.com/grpc-ecosystem/go-grpc-middleware/tracing/opentracing"
+	opentracing "github.com/opentracing/opentracing-go"
 	"github.com/valyala/fasthttp"
 	"google.golang.org/grpc"
 
@@ -116,6 +117,7 @@ func getGrpcClient() (pb.TransactionAPIClient, error) {
 			log.Fatalf("Error: %v", err)
 		}
 		defer closer.Close()
+		opentracing.SetGlobalTracer(tracer)
 
 		grpcInstanceConn, grpcInstanceError = grpc.Dial(*grpcAddr,
 			grpc.WithInsecure(),
@@ -174,6 +176,8 @@ func processCumSumRequest(ctx *fasthttp.RequestCtx) {
 	var executionTime int64
 	var requestStartTime uint32
 	message := "success"
+	tracer := opentracing.GlobalTracer()
+	span := tracer.StartSpan("ProcessCumSumRequest")
 
 	err := json.Unmarshal(ctx.PostBody(), &postBody)
 	if err != nil {
@@ -198,6 +202,7 @@ func processCumSumRequest(ctx *fasthttp.RequestCtx) {
 
 	marshalledJSON, _ := json.Marshal(output)
 	ctx.SetContentType("application/json")
+	span.Finish()
 	ctx.SetBody(marshalledJSON)
 }
 

@@ -4,7 +4,7 @@ metadata:
   name: jaeger-agent
   namespace: monitoring
   labels:
-    app: jaeger-agent
+    app: jaeger
     jaeger-infra: agent-daemonset
 spec:
   selector:
@@ -20,13 +20,17 @@ spec:
       dnsPolicy: ClusterFirstWithHostNet
       containers:
       - name: agent-instance
-        image: jaegertracing/jaeger-agent:1.6.0
-        args: ["--log-level=debug"]
+        image: jaegertracing/jaeger-agent:1.22.0
+        # env:
+        # - name: REPORTER_HTTP_HOST_PORT
+        #   value: jaeger-collector.monitoring:14268"
         command:
           - "/go/bin/agent-linux"
-          - "--collector.host-port=jaeger-collector.monitoring:14267"
-          - "--processor.jaeger-binary.server-queue-size=2000"
-          - "--discovery.conn-check-timeout=500ms"
+          - "--reporter.grpc.host-port=jaeger-collector.monitoring:14250"
+          # - "--help"
+          # - "--collector.host-port=http://jaeger-collector.monitoring:14267"
+          - "--processor.jaeger-compact.server-queue-size=2000"
+          # - "--discovery.conn-check-timeout=1s"
         ports:
         - containerPort: 5775
           protocol: UDP

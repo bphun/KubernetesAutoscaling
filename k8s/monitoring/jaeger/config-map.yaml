@@ -7,4 +7,13 @@ metadata:
     app: jaeger
     jaeger-infra: configuration
 data:
-  span-storage-type: memory
+  span-storage-type: elasticsearch
+  collector: |
+    es:
+      server-urls: http://elasticsearch-master.monitoring:9200
+    collector:
+      zipkin:
+        http-port: 9411
+  query: |
+    es:
+      server-urls: http://elasticsearch-master.monitoring:9200

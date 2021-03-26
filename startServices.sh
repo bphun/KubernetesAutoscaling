@@ -33,8 +33,20 @@ helm install nginx-ingress ingress-nginx/ingress-nginx
 kubectl apply -f k8s/horizontal-autoscalers/cum-sum-api.yaml 
 kubectl apply -f k8s/horizontal-autoscalers/transaction-api.yaml
 
-sleep 30
+# sleep 30
 
-kubectl apply -f k8s/monitoring/jaeger/jaeger-agent.yaml 
+# kubectl apply -f k8s/monitoring/jaeger/jaeger.yaml 
+
+helm repo add elastic https://helm.elastic.co
+kubectl apply -f k8s/volumes/elastic-volume.yaml
+helm install elasticsearch elastic/elasticsearch -n monitoring --set replicas=1 --set volumeClaimTemplate.storageClassName=manual --set volumeClaimTemplate.resources.requests.storage=1Gi
+ 
+sleep 65
+
+kubectl apply -f k8s/monitoring/jaeger/config-map.yaml 
 kubectl apply -f k8s/monitoring/jaeger/jaeger-collector.yaml 
 kubectl apply -f k8s/monitoring/jaeger/jaeger-query.yaml 
+
+sleep 10
+
+kubectl apply -f k8s/monitoring/jaeger/jaeger-agent.yaml 
