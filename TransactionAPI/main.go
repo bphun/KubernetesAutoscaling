@@ -68,9 +68,10 @@ var (
 
 func (s *server) SaveTransaction(ctx context.Context, in *pb.TransactionRequest) (*pb.TransactionReply, error) {
 	resultMessage := "Saved transaction"
+	tracer := opentracing.GlobalTracer()
+	saveTransactionSpan := tracer.StartSpan("grpc.SaveTransaction")
 
-	r, err := createTransaction(Transaction{InArr: in.GetInArr(), OutArr: in.GetOutArr(), ExecTime: in.GetExecTime(), StartTime: in.GetStartTime()})
-
+	r, err := createTransaction(saveTransactionSpan.Context(), Transaction{InArr: in.GetInArr(), OutArr: in.GetOutArr(), ExecTime: in.GetExecTime(), StartTime: in.GetStartTime()})
 	if err != nil {
 		resultMessage = err.Error()
 	} else {
@@ -79,26 +80,30 @@ func (s *server) SaveTransaction(ctx context.Context, in *pb.TransactionRequest)
 			log.Printf("Created transaction: %s", oid.String())
 		}
 	}
+	saveTransactionSpan.Finish()
 
 	return &pb.TransactionReply{Message: resultMessage}, nil
 }
 
-func getMongoClient() (*mongo.Client, error) {
+func getMongoClient(ctx opentracing.SpanContext) (*mongo.Client, error) {
 	dbOnce.Do(func() {
 		clientOptions := options.Client().ApplyURI(*mdbConnectionString)
 		clientOptions = clientOptions.SetMinPoolSize(2)
 		clientOptions = clientOptions.SetMaxPoolSize(20)
+		tracer := opentracing.GlobalTracer()
 
 		log.Printf("Connecting to MongoDB at %s", *mdbConnectionString)
-
+		mongoDbConnectionSpan := tracer.StartSpan("mongodb.connect", opentracing.ChildOf(ctx))
 		client, err := mongo.Connect(context.Background(), clientOptions)
 		if err != nil {
 			dbClientInstanceError = err
 		}
+		mongoDbConnectionSpan.Finish()
 
 		log.Printf("Connected to MongoDB at %s", *mdbConnectionString)
 		log.Printf("Pinging MongoDB cluster to test connection")
 
+		mongoDbPingSpan := tracer.StartSpan("mongoDbPing", opentracing.ChildOf(ctx))
 		err = client.Ping(context.Background(), nil)
 		if err != nil {
 			log.Fatalf("Failed to ping MongoDB cluster")
@@ -106,16 +111,17 @@ func getMongoClient() (*mongo.Client, error) {
 		} else {
 			log.Printf("Pinged MongoDB cluster")
 		}
+		mongoDbPingSpan.Finish()
 
 		dbClientInstance = client
 	})
 	return dbClientInstance, dbClientInstanceError
 }
 
-func createTransaction(task Transaction) (*mongo.InsertOneResult, error) {
+func createTransaction(ctx opentracing.SpanContext, task Transaction) (*mongo.InsertOneResult, error) {
 	tracer := opentracing.GlobalTracer()
-	client, err := getMongoClient()
-	span := tracer.StartSpan("TransactionInsert")
+	span := tracer.StartSpan("mongodb.createTransaction", opentracing.ChildOf(ctx))
+	client, err := getMongoClient(span.Context())
 
 	if err != nil {
 		return nil, err
@@ -132,7 +138,7 @@ func createTransaction(task Transaction) (*mongo.InsertOneResult, error) {
 
 func init() {
 	// Register standard server metrics and customized metrics to registry.
-	// reg.MustRegister(grpcMetrics, customizedCounterMetric)
+	reg.MustRegister(grpcMetrics)
 	// customizedCounterMetric.WithLabelValues("Test")
 }
 
@@ -140,10 +146,10 @@ func main() {
 	flag.Parse()
 
 	tracer, closer, err := tracing.NewTracer()
-	defer closer.Close()
 	if err != nil {
 		log.Fatalf("Error: %v", err)
 	}
+	defer closer.Close()
 	opentracing.SetGlobalTracer(tracer)
 
 	lis, err := net.Listen("tcp", GRPC_PORT)
@@ -170,7 +176,11 @@ func main() {
 		// grpc.StreamInterceptor(grpcMetrics.StreamServerInterceptor()),
 		// grpc.UnaryInterceptor(grpcMetrics.UnaryServerInterceptor()),
 	)
+
+	gRPCServerRegistrationSpan := tracer.StartSpan("gRPCServerRegistration")
 	pb.RegisterTransactionAPIServer(grpcServer, &server{})
+	gRPCServerRegistrationSpan.Finish()
+
 	grpcMetrics.InitializeMetrics(grpcServer)
 
 	go func() {

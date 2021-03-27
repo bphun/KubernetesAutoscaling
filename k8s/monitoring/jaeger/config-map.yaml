@@ -17,3 +17,23 @@ data:
   query: |
     es:
       server-urls: http://elasticsearch-master.monitoring:9200
+  sampling-strategy: |
+    {
+      "service_strategies": [
+        {
+          "service": "transaction-api",
+          "type": "const",
+          "param": 1.0
+        },
+        {
+          "service": "cum-sum-api",
+          "type": "const",
+          "param": 1.0
+        }
+      ],
+      "default_strategy": {
+        "type": "const",
+        "param": 1.0
+      }
+    }
+

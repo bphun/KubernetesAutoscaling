@@ -22,7 +22,8 @@ spec:
       containers:
       - image: jaegertracing/jaeger-collector:1.22.0
         name: jaeger-collector
-        args: ["--config-file=/conf/collector.yaml", "--es-archive.timeout=30s", "--log-level=debug"]
+        # args: ["--config-file=/conf/collector.yaml", "--es-archive.timeout=30s", "--log-level=debug"]
+        args: ["--config-file=/conf/collector.yaml", "--sampling.strategies-file=/conf/sampling-strategy.json", "--es-archive.timeout=30s", "--log-level=debug"]
         ports:
         - containerPort: 14267
           protocol: TCP
@@ -51,7 +52,15 @@ spec:
             items:
               - key: collector
                 path: collector.yaml
+              - key: sampling-strategy
+                path: sampling-strategy.json
           name: jaeger-configuration-volume
+        # - configMap:
+        #     name: jaeger-configuration
+        #     items:
+        #       - key: sampling-strategy
+        #         path: sampling-strategy.json
+        #   name: jaeger-sampling-strategy
     # resources:
     #   requests:
     #     memory: 300M

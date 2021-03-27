@@ -58,12 +58,7 @@ spec:
         env:
         - name: JAEGER_SERVICE_NAME
           value: transaction-api
-        # - name: JAEGER_RPC_METRICS
-        #   value: "true"
-        # - name: JAEGER_ENDPOINT
-        #   value: /jaeger
         - name: JAEGER_AGENT_HOST   # NOTE: Point to the Agent daemon on the Node
-        #   value: jaeger-collector.monitoring
           valueFrom:
             fieldRef:
               fieldPath: status.hostIP

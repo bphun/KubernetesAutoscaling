@@ -1,5 +1,9 @@
 #!/bin/bash
 
+sudo rm -rf /home/bphan/k8sAutoScalingTest/volumes/elasticsearch/
+sudo mkdir /home/bphan/k8sAutoScalingTest/volumes/elasticsearch/
+sudo chown 1000:1000 /home/bphan/k8sAutoScalingTest/volumes/elasticsearch
+
 kubectl apply -f k8s/namespaces/namespaces.yaml
 
 kubectl apply -f k8s/volumes/grafana-volume.yaml

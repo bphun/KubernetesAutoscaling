@@ -113,10 +113,10 @@ func getGrpcClient() (pb.TransactionAPIClient, error) {
 		log.Printf("Connecting to gRPC server at %s", *grpcAddr)
 
 		tracer, closer, err := tracing.NewTracer()
+		defer closer.Close()
 		if err != nil {
 			log.Fatalf("Error: %v", err)
 		}
-		defer closer.Close()
 		opentracing.SetGlobalTracer(tracer)
 
 		grpcInstanceConn, grpcInstanceError = grpc.Dial(*grpcAddr,
