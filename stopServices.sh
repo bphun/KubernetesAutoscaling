@@ -1,7 +1,8 @@
 #!/bin/bash
 
 kubectl delete -f k8s/nginx/nginx.yaml 
-kubectl delete -f k8s/api/api.yaml
+kubectl delete -f k8s/cum-sum-api/cum-sum-api.yaml
+kubectl delete -f k8s/transaction-api/transaction-api.yaml
 kubectl delete -f k8s/monitoring/grafana.yaml 
 kubectl delete -f k8s/monitoring/prometheus.yaml 
 kubectl delete -f k8s/monitoring/cadvisor.yaml 

@@ -68,8 +68,8 @@ var (
 
 func (s *server) SaveTransaction(ctx context.Context, in *pb.TransactionRequest) (*pb.TransactionReply, error) {
 	resultMessage := "Saved transaction"
-	tracer := opentracing.GlobalTracer()
-	saveTransactionSpan := tracer.StartSpan("grpc.SaveTransaction")
+	// tracer := opentracing.GlobalTracer()
+	saveTransactionSpan, _ := opentracing.StartSpanFromContext(ctx, "grpc.SaveTransaction")
 
 	r, err := createTransaction(saveTransactionSpan.Context(), Transaction{InArr: in.GetInArr(), OutArr: in.GetOutArr(), ExecTime: in.GetExecTime(), StartTime: in.GetStartTime()})
 	if err != nil {
@@ -87,13 +87,14 @@ func (s *server) SaveTransaction(ctx context.Context, in *pb.TransactionRequest)
 
 func getMongoClient(ctx opentracing.SpanContext) (*mongo.Client, error) {
 	dbOnce.Do(func() {
+		tracer := opentracing.GlobalTracer()
+		mongoDbConnectionSpan := tracer.StartSpan("mongodb.connect", opentracing.ChildOf(ctx))
+
 		clientOptions := options.Client().ApplyURI(*mdbConnectionString)
 		clientOptions = clientOptions.SetMinPoolSize(2)
 		clientOptions = clientOptions.SetMaxPoolSize(20)
-		tracer := opentracing.GlobalTracer()
 
 		log.Printf("Connecting to MongoDB at %s", *mdbConnectionString)
-		mongoDbConnectionSpan := tracer.StartSpan("mongodb.connect", opentracing.ChildOf(ctx))
 		client, err := mongo.Connect(context.Background(), clientOptions)
 		if err != nil {
 			dbClientInstanceError = err
@@ -130,6 +131,7 @@ func createTransaction(ctx opentracing.SpanContext, task Transaction) (*mongo.In
 
 	r, err := collection.InsertOne(context.Background(), task)
 	span.Finish()
+
 	if err != nil {
 		return nil, err
 	}

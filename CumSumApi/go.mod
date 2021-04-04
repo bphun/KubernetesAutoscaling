@@ -3,7 +3,7 @@ module github.com/bphun/KubernetesAutoscaling/CumSumApi
 go 1.16
 
 require (
-	github.com/bphun/KubernetesAutoscaling/Tracing v0.0.0-20210325065235-26550f27a15b
+	github.com/bphun/KubernetesAutoscaling/Tracing v0.0.0-20210325065540-e66a2f7bfc2c
 	github.com/bphun/KubernetesAutoscaling/TransactionAPI v0.0.0-20210324205732-3557535e53db
 	// github.com/bphun/KubernetesAutoscaling/TransactionAPI v0.0.0-20210321215857-a570db2c029f
 	github.com/cactus/go-statsd-client/v5 v5.0.0

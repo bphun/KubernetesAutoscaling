@@ -38,6 +38,13 @@ spec:
       - name: grafana
         image: public.ecr.aws/h6v8s1y1/k8s-autoscaling:grafana
         imagePullPolicy: Always
+        env:
+        - name: NODE_ADDRESS
+          valueFrom: 
+            fieldRef:
+              fieldPath: status.hostIP  
+        - name: GF_TRACING_JAEGER_ADDRESS
+          value: "${NODE_ADDRESS}:6831"
         volumeMounts:
         - name: grafana-pv-volume
           mountPath: /var/lib/grafana

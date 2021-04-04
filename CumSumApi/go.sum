@@ -34,6 +34,8 @@ github.com/bgentry/speakeasy v0.1.0/go.mod h1:+zsyZBPWlz7T6j88CTgSN5bM796AkVf0kB
 github.com/bphun/KubernetesAutoscaling/Tracing v0.0.0-20210324211738-07c8ff7bb59a/go.mod h1:yA6N+Ja0W+AfIYca9YdiDZXffI8Ojgpi+zbILRFpY8A=
 github.com/bphun/KubernetesAutoscaling/Tracing v0.0.0-20210325065235-26550f27a15b h1:93eekdqk0EAyNBm+LToRVGyz81q6YjtXtC8moaRVaqM=
 github.com/bphun/KubernetesAutoscaling/Tracing v0.0.0-20210325065235-26550f27a15b/go.mod h1:yA6N+Ja0W+AfIYca9YdiDZXffI8Ojgpi+zbILRFpY8A=
+github.com/bphun/KubernetesAutoscaling/Tracing v0.0.0-20210325065540-e66a2f7bfc2c h1:Y5xq0CvYX9RHwKwnKDyIcf6Bph9hWGWihnZprr7p77Y=
+github.com/bphun/KubernetesAutoscaling/Tracing v0.0.0-20210325065540-e66a2f7bfc2c/go.mod h1:yA6N+Ja0W+AfIYca9YdiDZXffI8Ojgpi+zbILRFpY8A=
 github.com/bphun/KubernetesAutoscaling/TransactionAPI v0.0.0-20210321215857-a570db2c029f h1:lIEyyyfwGiVuCWrzUjWlvztmBe26wV0rLBu8kE1LNDk=
 github.com/bphun/KubernetesAutoscaling/TransactionAPI v0.0.0-20210321215857-a570db2c029f/go.mod h1:hxbkJK7LWvRpcqSxG2rTNfo2PuvxVmvDC2cl2FPQT5I=
 github.com/bphun/KubernetesAutoscaling/TransactionAPI v0.0.0-20210323211724-7d748f94699c h1:y68616HaMcw0EZzimVY6iHNGsgjxZuCGmnmrA29BfEg=

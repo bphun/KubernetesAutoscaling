@@ -94,8 +94,10 @@ func main() {
 	statsdClientInstance.Close()
 }
 
-func getStatsdClient() (statsd.Statter, error) {
+func getStatsdClient(ctx opentracing.SpanContext) (statsd.Statter, error) {
 	statsdOnce.Do(func() {
+		tracer := opentracing.GlobalTracer()
+		getStatsdClientSpan := tracer.StartSpan("http.getStatsdClient", opentracing.ChildOf(ctx))
 		log.Printf("Connecting to statsD server at %s", STATSD_ADDR)
 
 		statsdClientInstance, statsdClientInstanceErr = statsd.NewClientWithConfig(statsdConfig)
@@ -103,6 +105,7 @@ func getStatsdClient() (statsd.Statter, error) {
 			log.Fatalf("Unable to connect to statsD: %v", statsdClientInstanceErr)
 		}
 		log.Printf("Connected to statsD server at %s", STATSD_ADDR)
+		getStatsdClientSpan.Finish()
 	})
 
 	return statsdClientInstance, statsdClientInstanceErr
@@ -142,7 +145,9 @@ func getGrpcClient() (pb.TransactionAPIClient, error) {
 
 func postRequestHook(h fasthttp.RequestHandler) fasthttp.RequestHandler {
 	return func(ctx *fasthttp.RequestCtx) {
-		statsdClient, _ := getStatsdClient()
+		tracer := opentracing.GlobalTracer()
+		postRequestHookSpan := tracer.StartSpan("http.postRequestHook")
+		statsdClient, _ := getStatsdClient(postRequestHookSpan.Context())
 
 		t1 := time.Now()
 		h(ctx)
@@ -153,10 +158,13 @@ func postRequestHook(h fasthttp.RequestHandler) fasthttp.RequestHandler {
 
 		statsdClient.TimingDuration("requests.duration", duration, 1.0)
 		statsdClient.Inc("requests.count", clientStats.NumRequests, 1.0)
+		postRequestHookSpan.Finish()
 	}
 }
 
-func updateTransactionHistory(inArr []int32, outArr []int32, requestStartTime uint32, executionTime int64) {
+func updateTransactionHistory(spanCtx opentracing.SpanContext, inArr []int32, outArr []int32, requestStartTime uint32, executionTime int64) {
+	tracer := opentracing.GlobalTracer()
+	updateTransactionHistorySpan := tracer.StartSpan("http.updateTransactionHistory", opentracing.ChildOf(spanCtx))
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
 
@@ -167,6 +175,7 @@ func updateTransactionHistory(inArr []int32, outArr []int32, requestStartTime ui
 		log.Fatalf("Could not update transaction history: %v", err)
 	}
 	log.Printf("TransactionDB: %s", r.GetMessage())
+	updateTransactionHistorySpan.Finish()
 }
 
 func processCumSumRequest(ctx *fasthttp.RequestCtx) {
@@ -177,7 +186,7 @@ func processCumSumRequest(ctx *fasthttp.RequestCtx) {
 	var requestStartTime uint32
 	message := "success"
 	tracer := opentracing.GlobalTracer()
-	span := tracer.StartSpan("ProcessCumSumRequest")
+	span := tracer.StartSpan("http.ProcessCumSumRequest")
 
 	err := json.Unmarshal(ctx.PostBody(), &postBody)
 	if err != nil {
@@ -185,12 +194,13 @@ func processCumSumRequest(ctx *fasthttp.RequestCtx) {
 		cumSumArr = make([]int32, 0)
 		ctx.SetStatusCode(fasthttp.StatusBadRequest)
 	} else {
+		spanContext := span.Context()
 		origArray := make([]int32, len(postBody.Arr))
 		cumSumArr = postBody.Arr
 		copy(origArray, cumSumArr)
-		requestStartTime, executionTime = cumSum(cumSumArr)
+		requestStartTime, executionTime = cumSum(spanContext, cumSumArr)
 
-		go updateTransactionHistory(origArray, cumSumArr, requestStartTime, executionTime)
+		go updateTransactionHistory(spanContext, origArray, cumSumArr, requestStartTime, executionTime)
 	}
 
 	output = OutputData{
@@ -202,11 +212,15 @@ func processCumSumRequest(ctx *fasthttp.RequestCtx) {
 
 	marshalledJSON, _ := json.Marshal(output)
 	ctx.SetContentType("application/json")
-	span.Finish()
 	ctx.SetBody(marshalledJSON)
+	span.Finish()
 }
 
-func cumSum(arr []int32) (uint32, int64) {
+func cumSum(ctx opentracing.SpanContext, arr []int32) (uint32, int64) {
+	tracer := opentracing.GlobalTracer()
+	span := tracer.StartSpan("http.cumSumAlgo", opentracing.ChildOf(ctx))
+	defer span.Finish()
+
 	start := time.Now()
 	for i := 1; i < len(arr); i++ {
 		arr[i] += arr[i-1]

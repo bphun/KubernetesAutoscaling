@@ -41,8 +41,34 @@ The `-n` argument is the number of requests that will be sent and `-c` is the nu
 
 If you want to change the HPA threshold, change the `averageValue` value in `k8s/horizontal-autoscalers/api.yaml` and reload the services using `./startServices.sh`
 
+## Update: 04/03/2021
+* Added MongoDB database to store request history. Request history may be used in future for custom data aggregation UI
+* Implement gRPC API to allow "Cum-Sum-API" to store requests in MongoDB database
+* Use [Jaeger](https://www.jaegertracing.io) to add distributed tracing support
+* Add ElasticSearch database to store Jaeger spans
+
+## API Architecture
+
+|--------|    HTTP    |---------------|    gRPC    |------------------|   HTTP    |-----------|
+|  User  |  ------->  |  Cum-Sum-API  |  ------->  |  TransactionAPI  |  ------>  |  MongoDB  |  
+|--------|            |---------------|            |------------------|           |-----------|
+
+### Distributed tracing pipeline:
+
+                                                                              |-------------|
+                                                                              |  Jaeger UI  |
+                                                                              |-------------|
+
+                                                                                    |
+                                                                                    |
+                                                                                    V
+
+  |------------|        |----------------|      |--------------------|      |-----------------|
+  |  REST API  |  --->  |  Jaeger Agent  | ---> |  Jaeger Collector  | ---> |  Elasticsearch  |
+  |------------|        |----------------|      |--------------------|      |-----------------|
+
 ## Future features
 * I already have Nginx exporter setup so I would like to add a HPA controller for that service
 * Add a VerticalPodAutoscaler (VPA) for the API and Nginx services using Node exporter
-* Add another "Microservice" so I can test out distributed tracing frameworks like OpenTracing 
+* ~~Add another "Microservice" so I can test out distributed tracing frameworks like OpenTracing~~ (*Update: 04/03/2021*)
 * Add improved logging to the Go API service

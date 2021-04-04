@@ -3,7 +3,7 @@ module github.com/bphun/KubernetesAutoscaling/TransactionAPI
 go 1.16
 
 require (
-	github.com/bphun/KubernetesAutoscaling/Tracing v0.0.0-20210325065235-26550f27a15b
+	github.com/bphun/KubernetesAutoscaling/Tracing v0.0.0-20210325065540-e66a2f7bfc2c
 	github.com/grpc-ecosystem/go-grpc-middleware v1.2.2
 	github.com/grpc-ecosystem/go-grpc-prometheus v1.2.0
 	github.com/opentracing/opentracing-go v1.2.0

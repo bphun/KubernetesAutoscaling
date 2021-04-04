@@ -35,6 +35,8 @@ github.com/bphun/KubernetesAutoscaling/Tracing v0.0.0-20210324211738-07c8ff7bb59
 github.com/bphun/KubernetesAutoscaling/Tracing v0.0.0-20210324211738-07c8ff7bb59a/go.mod h1:yA6N+Ja0W+AfIYca9YdiDZXffI8Ojgpi+zbILRFpY8A=
 github.com/bphun/KubernetesAutoscaling/Tracing v0.0.0-20210325065235-26550f27a15b h1:93eekdqk0EAyNBm+LToRVGyz81q6YjtXtC8moaRVaqM=
 github.com/bphun/KubernetesAutoscaling/Tracing v0.0.0-20210325065235-26550f27a15b/go.mod h1:yA6N+Ja0W+AfIYca9YdiDZXffI8Ojgpi+zbILRFpY8A=
+github.com/bphun/KubernetesAutoscaling/Tracing v0.0.0-20210325065540-e66a2f7bfc2c h1:Y5xq0CvYX9RHwKwnKDyIcf6Bph9hWGWihnZprr7p77Y=
+github.com/bphun/KubernetesAutoscaling/Tracing v0.0.0-20210325065540-e66a2f7bfc2c/go.mod h1:yA6N+Ja0W+AfIYca9YdiDZXffI8Ojgpi+zbILRFpY8A=
 github.com/casbin/casbin/v2 v2.1.2/go.mod h1:YcPU1XXisHhLzuxH9coDNf2FbKpjGlbCg3n9yuLkIJQ=
 github.com/cenkalti/backoff v2.2.1+incompatible/go.mod h1:90ReRw6GdpyfrHakVjL/QHaoyV4aDUVVkXQJJJ3NXXM=
 github.com/census-instrumentation/opencensus-proto v0.2.1/go.mod h1:f6KPmirojxKA12rnyqOA5BBL4O983OfeGPqjHWSTneU=
