@@ -49,9 +49,9 @@ If you want to change the HPA threshold, change the `averageValue` value in `k8s
 
 ## API Architecture
 ```
-|--------|    HTTP    |---------------|    gRPC    |------------------|   HTTP    |-----------|
-|  User  |  ------->  |  Cum-Sum-API  |  ------->  |  TransactionAPI  |  ------>  |  MongoDB  |  
-|--------|            |---------------|            |------------------|           |-----------|
+|--------|    HTTP    |---------------|    gRPC    |------------------|   TCP/IP Socket    |-----------|
+|  User  |  ------->  |  Cum-Sum-API  |  ------->  |  TransactionAPI  |  --------------->  |  MongoDB  |  
+|--------|            |---------------|            |------------------|                    |-----------|
 ```
 
 ### Distributed tracing pipeline:
