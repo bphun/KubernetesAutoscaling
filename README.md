@@ -48,13 +48,14 @@ If you want to change the HPA threshold, change the `averageValue` value in `k8s
 * Add ElasticSearch database to store Jaeger spans
 
 ## API Architecture
-
+```
 |--------|    HTTP    |---------------|    gRPC    |------------------|   HTTP    |-----------|
 |  User  |  ------->  |  Cum-Sum-API  |  ------->  |  TransactionAPI  |  ------>  |  MongoDB  |  
 |--------|            |---------------|            |------------------|           |-----------|
+```
 
 ### Distributed tracing pipeline:
-
+```
                                                                               |-------------|
                                                                               |  Jaeger UI  |
                                                                               |-------------|
@@ -66,6 +67,7 @@ If you want to change the HPA threshold, change the `averageValue` value in `k8s
   |------------|        |----------------|      |--------------------|      |-----------------|
   |  REST API  |  --->  |  Jaeger Agent  | ---> |  Jaeger Collector  | ---> |  Elasticsearch  |
   |------------|        |----------------|      |--------------------|      |-----------------|
+```
 
 ## Future features
 * I already have Nginx exporter setup so I would like to add a HPA controller for that service
