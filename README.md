@@ -47,7 +47,7 @@ If you want to change the HPA threshold, change the `averageValue` value in `k8s
 * Use [Jaeger](https://www.jaegertracing.io) to add distributed tracing support
 * Add ElasticSearch database to store Jaeger spans
 
-## API Architecture
+### API Architecture
 ```
 |--------|    HTTP    |---------------|    gRPC    |------------------|   TCP/IP Socket    |-----------|
 |  User  |  ------->  |  Cum-Sum-API  |  ------->  |  TransactionAPI  |  --------------->  |  MongoDB  |  
